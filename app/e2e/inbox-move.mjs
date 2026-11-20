@@ -1,0 +1,40 @@
+// From the Inbox page, moving a task into a project validates it (19 Nov 2026): dragged onto a
+// project in the menu, or with the row's project. Elsewhere a drag onto a project only moves it.
+// TEST Vikunja only. Usage: node e2e/inbox-move.mjs <app> <api> <user> <pass>
+import { chromium } from 'playwright-core';
+const [base, api, user, pass] = process.argv.slice(2);
+const jwt = (await (await fetch(api + '/api/v1/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: user, password: pass }) })).json()).token;
+const H = { Authorization: 'Bearer ' + jwt, 'Content-Type': 'application/json' };
+const req = async (m, p, b) => { for (let k = 0; k < 6; k++) { const r = await fetch(api + p, { method: m, headers: H, body: b ? JSON.stringify(b) : undefined }).catch(() => null); if (r && (r.ok || r.status < 500)) return r.json().catch(() => null); await new Promise((x) => setTimeout(x, 400 * (k + 1))); } return null; };
+let ok = 0, n = 0;
+const check = (name, cond, got = '') => { n++; if (cond) ok++; console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '  → ' + String(got).slice(0, 300)}`); };
+const st = Date.now().toString(36).slice(-4);
+const inbox = (await req('GET', '/api/v1/projects')).find((p) => p.title.toLowerCase() === 'inbox' && !p.parent_project_id);
+const A = await req('PUT', '/api/v1/projects', { title: `Moved here ${st}` });
+const B = await req('PUT', '/api/v1/projects', { title: `And then here ${st}` });
+const t = await req('PUT', `/api/v1/projects/${inbox.id}/tasks`, { title: `to file ${st}` });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+await ctx.addInitScript(([a, j]) => { if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', '1'); localStorage.setItem('vikunja_api_url', a); localStorage.setItem('vikunja_jwt', j); localStorage.setItem('news_seen', '2099'); }, [api, jwt]);
+const p = await ctx.newPage();
+await p.goto(base + '/'); await p.waitForTimeout(6000);
+await p.goto(base + '/inbox'); await p.waitForTimeout(3000);
+const server = async () => req('GET', `/api/v1/tasks/${t.id}`);
+await p.locator('.row', { hasText: `to file ${st}` }).first().dragTo(p.locator('.item', { hasText: `Moved here ${st}` }).first());
+await p.waitForTimeout(600);
+const toast = await p.locator('body').innerText();
+await p.waitForTimeout(3000);
+let s = await server();
+check('Inbox: dragged onto a project in the menu, it is in that project', s.project_id === A.id, s.project_id);
+check('…and validated', (s.labels ?? []).some((l) => l.title === 'ctx:validated'), JSON.stringify((s.labels ?? []).map((l) => l.title)));
+check('…and it has left the Inbox page', (await p.locator('.row', { hasText: `to file ${st}` }).count()) === 0);
+check('a message says so', toast.includes(`moved to Moved here ${st} and validated`), toast.slice(-300));
+await p.goto(base + `/project/${A.id}`); await p.waitForTimeout(2500);
+await p.locator('.row', { hasText: `to file ${st}` }).first().dragTo(p.locator('.item', { hasText: `And then here ${st}` }).first());
+await p.waitForTimeout(3000);
+s = await server();
+check('from a project page, a drag onto another project moves it', s.project_id === B.id, s.project_id);
+await browser.close();
+await req('DELETE', `/api/v1/tasks/${t.id}`); await req('DELETE', `/api/v1/projects/${A.id}`); await req('DELETE', `/api/v1/projects/${B.id}`);
+console.log(`${ok}/${n} passed`);
+process.exit(ok === n ? 0 : 1);

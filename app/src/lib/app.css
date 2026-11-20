@@ -1,0 +1,292 @@
+/* Design tokens — one place for every colour, size and radius, so the whole
+   app stays consistent. The interface itself is monochrome (ink on white);
+   the only colour comes from labels and from overdue/error states. */
+:root {
+	/* Fixed light theme — deliberately not driven by prefers-color-scheme,
+	   so the app always stays light regardless of the OS/browser's dark
+	   mode setting. */
+	color-scheme: light;
+
+	--bg: #ffffff;
+	--bg-side: #fafafa; /* side panels */
+	--bg-elevated: #f4f4f5; /* inputs, chips, resting buttons */
+	--bg-hover: #ececee;
+	--border: #e8e8ea; /* hairlines between regions */
+	--border-strong: #d4d4d8; /* inputs and menus */
+	--text: #111113;
+	--text-dim: #5c5c66;
+	--text-faint: #9a9aa4;
+	--accent: #111113; /* ink: primary actions, selection, active state */
+	--accent-contrast: #ffffff;
+	--ring: #2f6fed; /* keyboard focus only */
+	--danger: #d92c22;
+	--ok: #4fae7b; /* sync indicator, success */
+
+	--radius-sm: 4px; /* tiny badges */
+	--radius: 8px; /* controls */
+	--radius-lg: 12px; /* menus, dialogs */
+	--control-h: 32px; /* every button and input is this tall */
+	--panel-width: 252px;
+	/* Task list columns */
+	--col-project: 112px;
+	--col-date: 66px;
+	--col-link: 42px;
+	--col-icon: 26px;
+	--shadow-pop: 0 1px 2px rgba(17, 17, 19, 0.06), 0 8px 24px rgba(17, 17, 19, 0.12);
+
+	/* Type scale */
+	--fs-2xs: 11px; /* badges and counters */
+	--fs-xs: 12px;
+	--fs-sm: 13px;
+	--fs-md: 14px;
+	--fs-lg: 17px;
+	--fs-xl: 24px;
+
+	font-family:
+		ui-sans-serif, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI',
+		Inter, Roboto, Helvetica, Arial, sans-serif;
+	font-size: var(--fs-md);
+	line-height: 1.45;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+/* Black theme (13 Nov 2026, stores/appearance.svelte.ts): pure black, white ink, a touch of red,
+   and a dot-matrix font for the big titles, in the spirit of the Nothing phones' own apps. */
+@font-face {
+	font-family: 'Doto';
+	src: url('/fonts/doto-700.woff2') format('woff2');
+	font-weight: 700;
+	font-display: swap;
+}
+:root[data-theme='black'] {
+	color-scheme: dark;
+	--bg: #000000;
+	--bg-side: #000000;
+	--bg-elevated: #141414;
+	--bg-hover: #1c1c1c;
+	--border: #1f1f1f;
+	--border-strong: #333333;
+	--text: #f2f2f2;
+	--text-dim: #a3a3a3;
+	--text-faint: #666666;
+	--accent: #f2f2f2;
+	--accent-contrast: #000000;
+	--ring: #ffffff;
+	--danger: #ff3b30;
+	--ok: #d9d9d9;
+	--shadow-pop: 0 0 0 1px #2a2a2a, 0 10px 30px rgba(0, 0, 0, 0.7);
+	--font-dots: 'Doto', ui-monospace, monospace;
+}
+:root[data-theme='black'] h1 {
+	font-family: var(--font-dots);
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+/* Shades of grey instead of colours: labels, their dots, colour swatches, status marks. */
+:root[data-mono='1'] .chip,
+:root[data-mono='1'] .dot,
+:root[data-mono='1'] .swatch,
+:root[data-mono='1'] .pending-mark,
+:root[data-mono='1'] .step .num {
+	filter: grayscale(1);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+::selection {
+	background: color-mix(in srgb, var(--ring) 22%, transparent);
+}
+
+/* Dates and counts line up in columns. */
+body {
+	font-variant-numeric: tabular-nums;
+}
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+	background: var(--bg);
+	color: var(--text);
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+	color: inherit;
+}
+
+button {
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	color: var(--text);
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+h1,
+h2,
+h3 {
+	margin: 0;
+	font-weight: 600;
+}
+
+/* Keyboard focus is always visible; mouse clicks don't draw a ring. */
+:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 1px;
+}
+
+/* ---------- Buttons ----------
+   .btn          quiet button: no box until hovered
+   .btn-outline  same, with a hairline border (secondary actions)
+   .btn-primary  filled ink (the one main action of a view)
+   .btn-icon     square, icon only                                      */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	height: var(--control-h);
+	padding: 0 12px;
+	border-radius: var(--radius);
+	background: transparent;
+	border: 1px solid transparent;
+	font-size: var(--fs-sm);
+	font-weight: 500;
+	white-space: nowrap;
+	transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.btn:hover:not(:disabled) {
+	background: var(--bg-hover);
+}
+.btn:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+.btn-outline {
+	border-color: var(--border-strong);
+}
+.btn.active {
+	background: var(--accent);
+	color: var(--accent-contrast);
+}
+.btn-primary {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: var(--accent-contrast);
+}
+.btn-primary:hover:not(:disabled) {
+	background: #2b2b30;
+}
+.btn-icon {
+	width: var(--control-h);
+	height: var(--control-h);
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius);
+	color: var(--text-dim);
+}
+.btn-icon:hover {
+	background: var(--bg-hover);
+	color: var(--text);
+}
+
+/* ---------- Form fields ---------- */
+input[type='text'],
+input[type='date'],
+input[type='datetime-local'],
+input[type='password'],
+input[type='url'],
+textarea,
+select {
+	background: var(--bg);
+	border: 1px solid var(--border-strong);
+	border-radius: var(--radius);
+	padding: 0 10px;
+	height: var(--control-h);
+	font-size: var(--fs-md);
+}
+textarea {
+	height: auto;
+	padding: 8px 10px;
+	line-height: 1.5;
+}
+input::placeholder,
+textarea::placeholder {
+	color: var(--text-faint);
+}
+input:focus,
+textarea:focus,
+select:focus {
+	outline: none;
+	border-color: var(--text);
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 0;
+}
+
+.scroll-y {
+	overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: var(--border-strong);
+	border-radius: 8px;
+	border: 3px solid transparent;
+	background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--text-faint);
+	background-clip: padding-box;
+	border: 3px solid transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	* {
+		transition: none !important;
+		animation: none !important;
+	}
+}
+
+/* Page column: content is a comfortable reading width, centred, on every page. */
+.page {
+	max-width: none;
+	margin: 0 auto;
+	padding: 28px 28px 96px;
+}
+@media (max-width: 640px) {
+	.page {
+		padding: 20px 16px 96px;
+	}
+}
+
+/* Section heading used on every list page (Today, Red, sections...). */
+.section-title {
+	font-size: var(--fs-sm);
+	font-weight: 600;
+	color: var(--text-dim);
+	margin: 0 0 6px;
+}

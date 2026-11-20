@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Tasks – User guide</title>
+<style>
+@page { size: A4; margin: 18mm 17mm 18mm 17mm; }
+:root { --ink: #16161a; --dim: #5b5b66; --faint: #8b8b96; --line: #e6e6ea; --soft: #f5f5f7; --accent: #4f46e5; --red: #e5484d; --green: #2f9e5b; }
+* { box-sizing: border-box; }
+html { font-family: 'Inter', sans-serif; color: var(--ink); font-size: 10.2pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; }
+h1, h2, h3 { font-family: 'Inter Display', 'Inter', sans-serif; letter-spacing: -0.015em; }
+h2 { font-size: 19pt; font-weight: 650; margin: 0 0 4mm; padding-top: 1mm; }
+h2 .n { color: var(--accent); font-weight: 600; margin-right: 3mm; }
+h3 { font-size: 12pt; font-weight: 650; margin: 6mm 0 2mm; }
+p { margin: 0 0 2.6mm; }
+ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+li { margin: 0 0 1.2mm; }
+section { break-before: page; }
+section.flow { break-before: auto; margin-top: 10mm; }
+.lead { font-size: 11.2pt; color: var(--dim); margin-bottom: 5mm; }
+kbd { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.6pt; background: var(--soft); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0.2mm 1.4mm; white-space: nowrap; }
+code { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.8pt; background: var(--soft); border-radius: 3px; padding: 0.2mm 1.2mm; }
+table.browsers td { padding-top: 0.9mm; padding-bottom: 0.9mm; font-size: 9pt; }
+table.browsers td.yes { color: #1f7a3a; font-weight: 600; }
+table.browsers td.part { color: #a15c00; font-weight: 600; }
+.chip { display: inline-block; font-size: 8.4pt; padding: 0.1mm 2.2mm 0.2mm; border-radius: 10px; background: #eef0ff; white-space: nowrap; }
+.chip::before { content: ''; display: inline-block; width: 1.6mm; height: 1.6mm; border-radius: 50%; background: var(--c, #5f5ff6); margin-right: 1.2mm; vertical-align: 0.15mm; }
+figure { margin: 3mm 0 5mm; break-inside: avoid; }
+figure img { width: 100%; display: block; border: 1px solid var(--line); border-radius: 3mm; box-shadow: 0 1mm 4mm rgba(0,0,0,0.06); }
+figcaption { font-size: 8.6pt; color: var(--faint); margin-top: 1.6mm; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; align-items: start; }
+.three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; align-items: start; }
+.phone img { border-radius: 5mm; }
+.box { border: 1px solid var(--line); border-radius: 3mm; padding: 3.5mm 4.5mm; margin: 3mm 0 4mm; break-inside: avoid; background: #fff; }
+.box.tip { background: #f3f4ff; border-color: #dfe1ff; }
+.box.warn { background: #fff7ec; border-color: #ffe2b8; }
+.box h4 { margin: 0 0 1.5mm; font-size: 10.4pt; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.4pt; break-inside: auto; }
+th { text-align: left; font-weight: 600; color: var(--dim); font-size: 8.6pt; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1.5px solid var(--ink); padding: 1.5mm 2mm; }
+td { border-bottom: 1px solid var(--line); padding: 1.8mm 2mm; vertical-align: top; }
+tr { break-inside: avoid; }
+td:first-child { white-space: nowrap; }
+.steps { counter-reset: s; list-style: none; padding: 0; }
+.steps > li { counter-increment: s; position: relative; padding-left: 9mm; margin-bottom: 2.6mm; }
+.steps > li::before { content: counter(s); position: absolute; left: 0; top: -0.2mm; width: 6mm; height: 6mm; border-radius: 50%; background: var(--ink); color: #fff; font-size: 8.6pt; font-weight: 600; text-align: center; line-height: 6mm; }
+/* cover */
+.cover { height: 257mm; display: flex; flex-direction: column; break-after: page; }
+.cover .brand { display: flex; align-items: center; gap: 3mm; font-weight: 650; font-size: 12pt; }
+.cover .logo { width: 10mm; height: 10mm; border-radius: 2.5mm; background: #2f6fed; color: #fff; display: grid; place-items: center; font-size: 8pt; font-weight: 700; line-height: 1; text-align: center; }
+.cover h1 { font-size: 40pt; font-weight: 700; margin: 26mm 0 4mm; line-height: 1.05; letter-spacing: -0.03em; }
+.cover .sub { font-size: 14pt; color: var(--dim); max-width: 140mm; }
+.cover figure { margin-top: auto; }
+.cover .meta { font-size: 9pt; color: var(--faint); margin-top: 6mm; display: flex; justify-content: space-between; }
+/* contents */
+.toc { columns: 2; column-gap: 10mm; padding: 0; list-style: none; counter-reset: t; }
+.toc li { counter-increment: t; break-inside: avoid; padding: 1.6mm 0; border-bottom: 1px solid var(--line); }
+.toc li::before { content: counter(t); display: inline-block; width: 7mm; color: var(--accent); font-weight: 600; }
+.flow-diagram { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 4mm 0 5mm; }
+.flow-diagram div { background: var(--soft); border-radius: 3mm; padding: 3mm; font-size: 9pt; position: relative; }
+.flow-diagram b { display: block; font-size: 10.5pt; margin-bottom: 1mm; }
+.flow-diagram div:not(:last-child)::after { content: '→'; position: absolute; right: -3mm; top: 50%; transform: translate(50%, -50%); color: var(--faint); font-size: 12pt; }
+.small { font-size: 8.8pt; color: var(--dim); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ COVER -->
+<div class="cover">
+	<div class="brand"><div class="logo">To<br>Do</div> Tasks</div>
+	<h1>User guide</h1>
+	<p class="sub">Everything you need to use the Tasks app on your phone and your computer: getting started, capturing, organising and getting things done.</p>
+	<figure><img src="desk-home.png" alt=""></figure>
+	<div class="meta"><span>Version of 19 November 2026</span><span>App address: https://pc-lou.tailc45f62.ts.net:8443</span></div>
+</div>
+
+<!-- ============================================================ CONTENTS -->
+<section style="break-before: auto">
+	<h2>Contents</h2>
+	<ol class="toc">
+		<li>Getting started</li>
+		<li>How the app works, in one minute</li>
+		<li>A tour of the screen</li>
+		<li>Capturing tasks</li>
+		<li>The Inbox: define, then validate</li>
+		<li>The home page</li>
+		<li>Projects</li>
+		<li>A task in detail</li>
+		<li>Labels, filters and search</li>
+		<li>Tomorrow and the Weekly review</li>
+		<li>The Bin</li>
+		<li>On the phone</li>
+		<li>Automations</li>
+		<li>Offline, sync and updates</li>
+		<li>The Help centre (?)</li>
+		<li>Your data and privacy</li>
+		<li>Keyboard shortcuts</li>
+		<li>Questions and problems</li>
+	</ol>
+
+	<div class="box tip" style="margin-top: 8mm">
+		<h4>In short</h4>
+		<ul>
+			<li>Everything you think of goes into the <b>Inbox</b> first, in one tap.</li>
+			<li>Later, you give each task a <b>project</b>, <b>labels</b> and maybe a <b>date</b>, then <b>validate</b> it.</li>
+			<li>The <b>home page</b> then shows what to do now: <b>Today</b>, <b>This week</b>, <b>Red</b> (urgent) and <b>Available</b> (next actions). <b>+</b> next to a block's name: a new task with that block's label.</li>
+			<li>It works on every device, even with no internet, and keeps everything in sync.</li>
+		</ul>
+	</div>
+
+	<section>
+	<h2><span class="n">1</span>Getting started</h2>
+	<p class="lead">You need: the address of the app, your username and a temporary password, given to you by Lou, who runs the server. Nothing else to install.</p>
+	<ol class="steps">
+		<li>Open <b>https://pc-lou.tailc45f62.ts.net:8443</b> in your browser.</li>
+		<li>Sign in with your username and password (the server is known: <b>Change server</b> only if you use another one). A password manager (Bitwarden…) fills the two boxes: save the login for <code>https://pc-lou.tailc45f62.ts.net</code>. If you turned on two-factor authentication, enter the 6-digit code from your authenticator app when asked. A device stays signed in as long as you open the app on it at least once a year.</li>
+		<li><b>Install the app</b> so it gets its own icon and works offline: tap <b>?</b> (Help), then <b>Install the app</b>: it installs it, or shows the steps for your browser (also in the table below).</li>
+		<li><b>Change your password</b>: open <code>https://pc-lou.tailc45f62.ts.net</code> (the server's own pages), sign in, then Settings. Turning on two-factor authentication there is recommended.</li>
+	</ol>
+	<h3>Which browser, on which device</h3>
+	<p class="small"><b>Opened the link from WhatsApp, an e-mail or a message?</b> It may open inside that app, which cannot install anything: choose "Open in Chrome" / "Open in browser" first. Once signed in, the app works the same in every browser. Install it on as many devices as you like: they all show the same tasks.</p>
+	<table class="browsers">
+		<tr><th>Device</th><th>Browser</th><th>Install as an app</th><th>How</th></tr>
+		<tr><td rowspan="2"><b>Windows PC</b></td><td>Chrome, Edge, Brave</td><td class="yes">Yes</td><td>Install icon at the right of the address bar (or menu → <b>Install Tasks</b>).</td></tr>
+		<tr><td>Firefox</td><td class="part">In a tab</td><td>Works fully in a tab; pin the tab or bookmark it.</td></tr>
+		<tr><td rowspan="3"><b>Mac</b></td><td>Chrome, Edge, Brave</td><td class="yes">Yes</td><td>Install icon at the right of the address bar.</td></tr>
+		<tr><td>Safari (macOS 14 Sonoma or later)</td><td class="yes">Yes</td><td>File → <b>Add to Dock</b>.</td></tr>
+		<tr><td>Firefox</td><td class="part">In a tab</td><td>Works fully in a tab.</td></tr>
+		<tr><td rowspan="2"><b>Android phone or tablet</b></td><td>Chrome, Brave</td><td class="yes">Yes, the most complete</td><td>Menu ⋮ → <b>Install</b> (or "Add to Home screen"). Also gives the long-press <b>New task</b> shortcut and <b>Share → Tasks</b> (section 4).</td></tr>
+		<tr><td>Firefox, Edge, Samsung Internet</td><td class="yes">Yes</td><td>Menu → <b>Install</b> or "Add to Home screen". Everything works, except the long-press shortcut and Share → Tasks.</td></tr>
+		<tr><td><b>iPhone / iPad</b></td><td>Safari (also Chrome or Edge on iOS 16.4 or later)</td><td class="yes">Yes</td><td>Share button → <b>Add to Home Screen</b>. No long-press shortcut and no Share → Tasks on iPhone.</td></tr>
+	</table>
+
+	</section>
+</section>
+
+<!-- ============================================================ 2 -->
+<section>
+	<h2><span class="n">2</span>How the app works, in one minute</h2>
+	<p class="lead">The app follows a simple method (known as "Getting Things Done"): empty your head into one place, decide later what each thing is, then work from short lists of things you can actually do now.</p>
+	<div class="flow-diagram">
+		<div><b>Capture</b>Anything you think of, in one line. It lands in the Inbox.</div>
+		<div><b>Define</b>Give it a project, labels, a date if needed.</div>
+		<div><b>Validate</b>One click: it leaves the Inbox and joins its project.</div>
+		<div><b>Do</b>The home page shows what to do today and next.</div>
+	</div>
+	<h3>The words you will meet</h3>
+	<table>
+		<tr><th>Word</th><th>Meaning</th></tr>
+		<tr><td><b>Inbox</b></td><td>Everything not yet defined. A task stays there until you validate it, however much you change it.</td></tr>
+		<tr><td><b>Project</b></td><td>Where a task belongs ("Move flat", "Annual report"). Projects can contain sub-projects.</td></tr>
+		<tr><td><b>Label</b></td><td>A coloured tag on a task. A few have a special meaning (below); you can create any others you like (<span class="chip" style="--c:#4dabf7">call</span> <span class="chip" style="--c:#4caf50">read</span> <span class="chip" style="--c:#b197fc">&lt;15</span> for "less than 15 minutes"…).</td></tr>
+		<tr><td><b>Pro / Perso</b></td><td>An optional context on your top-level projects (work / personal), to see only one side of your life.</td></tr>
+	</table>
+	<h3>Labels with a special meaning</h3>
+	<table>
+		<tr><th>Label</th><th>Means</th><th>Shown in</th></tr>
+		<tr><td><span class="chip" style="--c:#000">today</span></td><td>You chose to do it today</td><td>Home → Today</td></tr>
+		<tr><td><span class="chip" style="--c:#5f5ff6">next-action</span></td><td>The next thing to do in its project</td><td>Home → Available</td></tr>
+		<tr><td><span class="chip" style="--c:#ff473d">p1</span></td><td>Top priority</td><td>Home → Red</td></tr>
+		<tr><td><span class="chip" style="--c:#ff473d">overdue</span></td><td>Due date passed (set automatically)</td><td>Home → Red</td></tr>
+		<tr><td><span class="chip" style="--c:#ffab40">last-day</span></td><td>Due today (set automatically)</td><td>Home → Red</td></tr>
+		<tr><td><span class="chip" style="--c:#5f5ff6">waiting-for</span></td><td>You are waiting for someone else</td><td>Weekly review</td></tr>
+	</table>
+	<p class="small"><span class="chip" style="--c:#ff473d">overdue</span> and <span class="chip" style="--c:#ffab40">last-day</span> are added and removed for you when the automations are on (section 13). Create <span class="chip" style="--c:#ff473d">p1</span> and <span class="chip" style="--c:#5f5ff6">waiting-for</span> yourself the first time you need them.</p>
+</section>
+
+<!-- ============================================================ 3 -->
+<section>
+	<h2><span class="n">3</span>A tour of the screen</h2>
+	<p class="lead">Three places, three roles: the <b>top bar</b> holds what works everywhere, the <b>menu</b> (☰) every place you can go, and <b>?</b> everything about the app itself.</p>
+	<figure style="width:68%;margin-left:auto;margin-right:auto"><img src="desk-home.png" alt=""><figcaption>The home page on a computer, with the menu on the left.</figcaption></figure>
+	<table>
+		<tr><th>Where</th><th>What</th></tr>
+		<tr><td>Top left: ☰</td><td>Shows or hides the <b>menu</b>.</td></tr>
+		<tr><td>Top left: house, <b>All Pro Perso</b>, ← →</td><td>Home page; what the home page and the menu show (click <b>All</b>, <b>Pro</b> or <b>Perso</b>, section 7); back and forward.</td></tr>
+		<tr><td>Top middle: Search</td><td>Finds any task, in every view.</td></tr>
+		<tr><td>Top right: dot</td><td>Sync status: green "Up to date", or changes waiting to be sent. Click it for the details (Status).</td></tr>
+		<tr><td>Top right: ↶ ↷ and +</td><td>Undo, redo (when there is something to undo); New task.</td></tr>
+		<tr><td>Top right: ?</td><td>The <b>Help centre</b>: Help, Updates, Status, Settings (section 15). A dot on it: blue, updates you have not seen; orange or red, something to look at in Status.</td></tr>
+		<tr><td>The menu, top</td><td>The pages: <b>Inbox</b>, <b>Shopping</b>, <b>Upcoming</b>, <b>Tomorrow</b>, <b>Weekly review</b>, <b>Bin</b>.</td></tr>
+		<tr><td>The menu, then</td><td><b>Projects</b>, <b>Filters</b> and <b>Labels</b>, each with its <b>+</b> to create one. Click a heading to fold or unfold it (remembered on each device).</td></tr>
+		<tr><td>A page</td><td>Its title and its own buttons at the top (for a project: + a new task, ⋯ order, completed and pending tasks, Mark pending, Archive), then its tasks.</td></tr>
+	</table>
+	<div class="two">
+		<figure><img src="desk-views.png" alt=""><figcaption>All, Pro, Perso, top left.</figcaption></figure>
+		<div>
+			<h3 style="margin-top:3mm">Views</h3>
+			<ul>
+				<li><b>All</b>: everything you have defined.</li>
+				<li><b>Pro</b> / <b>Perso</b>: only the projects of that context, and their tasks.</li>
+			</ul>
+		</div>
+	</div>
+</section>
+
+<!-- ============================================================ 4 -->
+<section>
+	<h2><span class="n">4</span>Capturing tasks</h2>
+	<p class="lead">Capture first, think later. A task needs only a title to start with; it goes to the Inbox.</p>
+	<table>
+		<tr><th>Where</th><th>How</th></tr>
+		<tr><td>Computer</td><td>Press <kbd>n</kbd>, or the <b>+</b> at the top right. Type, <kbd>Enter</kbd>. <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> adds it and keeps the box open for the next one.</td></tr>
+		<tr><td>Computer, from anywhere</td><td>A key combination that opens a small New task box even when the app is closed (set it up once, see below).</td></tr>
+		<tr><td>Phone</td><td>The round <b>+</b> button at the bottom right.</td></tr>
+		<tr><td>Phone, from the home screen</td><td>Only if the app was installed with <b>Chrome or Brave on Android</b>: long-press the Tasks icon → <b>New task</b>, or drag that "New task" item onto your home screen for a one-tap button. Not available with Firefox or on an iPhone: use the round <b>+</b> instead.</td></tr>
+		<tr><td>From another app</td><td>Same condition (Android, installed with Chrome or Brave). In another app, for example on a web page, an e-mail or a message, tap <b>Share</b> and choose <b>Tasks</b> in the list of apps: the New task box opens with the page title or the text as the task's title and the link in its notes. Check it and tap <b>Add</b>.</td></tr>
+		<tr><td>Inside a project</td><td>At the bottom of a project's list (or of one of its sections): <b>Add a task to this project…</b> The task is created in that project and validated at once, without going through the Inbox.</td></tr>
+		<tr><td>Something to buy</td><td>Tick the <b>cart</b> in the New task box before <kbd>Enter</kbd>: it goes straight to the <b>Shopping</b> list, not to the Inbox (section 9).</td></tr>
+	</table>
+	<p class="small">The app starts every task title with a capital letter (not when it starts with a web address or a word like "iPhone").</p>
+	<div class="box tip">
+		<h4>A key combination to add a task from anywhere on your computer</h4>
+		<p><b>Windows</b> (Chrome or Edge): right-click the desktop → New → <b>Shortcut</b>. As location, paste<br><code>"C:\Program Files\Google\Chrome\Application\chrome.exe" --app=https://pc-lou.tailc45f62.ts.net:8443/quick-add --window-size=680,320</code><br>(for Edge: <code>"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"</code> instead of Chrome). Name it "New task". Then right-click it → Properties → click in <b>Shortcut key</b> and press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> → OK.</p>
+		<p><b>Mac</b>: open the <b>Shortcuts</b> app → <b>+</b> → add the action <b>Open URLs</b> with <code>https://pc-lou.tailc45f62.ts.net:8443/quick-add</code>. Name it "New task", then in its details (ⓘ) choose <b>Add Keyboard Shortcut</b> and press, for example, <kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd>.</p>
+		<p>The first time, sign in in the window that opens. Then the key opens a one-line box: type, <kbd>Enter</kbd>, and the task is in your Inbox.</p>
+	</div>
+</section>
+
+<!-- ============================================================ 5 -->
+<section>
+	<h2><span class="n">5</span>The Inbox: define, then validate</h2>
+	<p class="lead"><b>Inbox</b> is the first page of the menu (or press <kbd>g</kbd> then <kbd>i</kbd>). Every new task waits here until you validate it.</p>
+	<figure><img src="desk-inbox.png" alt=""><figcaption>The Inbox: newest first; the circle on the right validates.</figcaption></figure>
+	<ol class="steps">
+		<li><b>Define</b> the task directly in its row: click the title to rename it, the project column to choose a project, the small + next to the labels to add some, the date columns for a start or due date. To see everything, open the task with the <b>+ at the right end of its row</b> (or <kbd>Enter</kbd>).</li>
+		<li><b>Validate</b>: click the <b>circle on the right</b> (or press <kbd>v</kbd>). It needs a project first. The task leaves the Inbox and appears in its project and on the home page if it has a home label.</li>
+		<li><b>Already done?</b> Right-click the circle (or press <kbd>x</kbd>): it is validated and completed in one go.</li>
+		<li><b>Straight into its project</b> (computer): drag the task onto the project in the menu. It is moved and validated in one go. The same when you choose its project in its row, or with <b>Move</b> for several selected tasks.</li>
+	</ol>
+	<div class="box tip">
+		<h4>Good to know</h4>
+		<ul>
+			<li>Changing a task never takes it out of the Inbox: only validating, completing or deleting it does.</li>
+			<li><b>Newest first ↓ / Oldest first ↑</b> at the top right of the list changes the order.</li>
+			<li>To send a task back to the Inbox later: "Back to Inbox" on its page, or <kbd>i</kbd>.</li>
+			<li>Keyboard: <kbd>1</kbd> sets Pro, <kbd>2</kbd> sets Perso, <kbd>m</kbd> moves to a project, <kbd>l</kbd> labels, <kbd>r</kbd> renames.</li>
+		</ul>
+	</div>
+</section>
+
+<!-- ============================================================ 6 -->
+<section>
+	<h2><span class="n">6</span>The home page</h2>
+	<p class="lead">What to do now, in four short lists, with a filter box at the top to find anything else.</p>
+	<table>
+		<tr><th>Block</th><th>Shows</th></tr>
+		<tr><td><b>Today</b></td><td>Tasks labelled <span class="chip" style="--c:#000">today</span>.</td></tr>
+		<tr><td><b>This week</b></td><td>The week's list: tasks labelled <span class="chip" style="--c:#1e88e5">week</span> (starred in the Weekly review's Plan the week), unless already in Today.</td></tr>
+		<tr><td><b>Red</b></td><td>Urgent: <span class="chip" style="--c:#ff473d">p1</span>, <span class="chip" style="--c:#ff473d">overdue</span>, <span class="chip" style="--c:#ffab40">last-day</span>.</td></tr>
+		<tr><td><b>Available</b></td><td>Your next actions: <span class="chip" style="--c:#5f5ff6">next-action</span>, plus every open task of a project whose name starts with <b>Single tasks</b> (for example "Single tasks Pro" and "Single tasks Perso"), unless it is <span class="chip" style="--c:#5f5ff6">waiting-for</span>.</td></tr>
+	</table>
+	<p>Complete a task with its <b>circle</b> on the left (or <kbd>x</kbd>). On a computer, open it with the <b>+ at the right end of its row</b> (clicking the title renames it); on a phone, tap it.</p>
+	<h3>The filter box</h3>
+	<figure><img src="desk-filter.png" alt=""><figcaption>Typing "call": the matching tasks appear at once, and the label "call" is proposed.</figcaption></figure>
+	<ul>
+		<li><b>Type</b>: the matching tasks of the view replace the four blocks immediately. Words are searched in the title, the notes, the label names and the project name.</li>
+		<li>The <b>labels</b> matching what you type are proposed: <kbd>Enter</kbd> (or a click) turns one into a chip, and you can add more. With two labels or more, choose <b>All of them</b> or <b>Any of them</b>.</li>
+		<li>Tap a chip to switch it to "<b>not</b>" (tasks <i>without</i> that label); its × removes it.</li>
+		<li>Two small menus then appear: <b>due date</b> (overdue, today, next 7 days, between two dates…) and <b>project</b> (sub-projects included).</li>
+		<li><b>×</b> at the right of the box, or <kbd>Esc</kbd>, clears it and brings the blocks back. The home page always opens with an empty box.</li>
+	</ul>
+</section>
+
+<!-- ============================================================ 7 -->
+<section>
+	<h2><span class="n">7</span>Projects</h2>
+	<p class="lead">The menu (☰) holds your projects and sub-projects, in your own order, under <b>Projects</b>. Click one to open its page. <b>Show pending</b> and <b>archived</b>, under the heading, also list those.</p>
+	<ul>
+		<li><b>New project</b>: the <b>+</b> next to "Projects".</li>
+		<li><b>Reorder or nest</b>: drag a project up or down, or onto another to put it inside.</li>
+		<li><b>Edit</b>: right-click a project. You can rename it, choose its parent, its context (<b>Pro</b>, <b>Perso</b> or none; sub-projects follow their top-level project), mark it <b>pending</b>, <b>archive</b> or <b>delete</b> it. Closing the panel saves.</li>
+		<li><b>Pending</b> projects are ideas for later: hidden from the views until you activate them ("Show pending" lists them).</li>
+		<li><b>Archive</b> a finished project (only once all its tasks are done; the app checks with the server, so it needs the internet). "Show archived" lists them.</li>
+		<li><b>Delete</b> a project, archived or not: its open tasks go back to the Inbox, its completed ones to the Bin. Nothing open is ever lost: if a task cannot be moved out, nothing is deleted.</li>
+		<li><b>One-off tasks</b>: create a project named <b>Single tasks Pro</b> or <b>Single tasks Perso</b> (any name starting with "Single tasks") for tasks that are not part of a bigger project. Each of its tasks is its own next step, so it shows in <b>Available</b> on the home page without the <span class="chip" style="--c:#5f5ff6">next-action</span> label.</li>
+	</ul>
+	<h3>A project's page</h3>
+	<figure style="width:62%"><img src="desk-project.png" alt=""><figcaption>A project page: the name with + and ⋯, a line of figures, then the tasks and the sections.</figcaption></figure>
+	<ul>
+		<li>Under the name, a small line only when the project is pending or archived. No numbers of tasks anywhere on the page.</li>
+		<li><b>+</b> next to the name: a new task, in a small window: the title, notes, then a row of buttons for the project, section, start, due (Today, Tomorrow, In a week, or a date) and labels (each label chosen appears by its name in the row, with × to take it off). <kbd>Enter</kbd> adds it, <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> adds it and keeps the window open; <kbd>Esc</kbd> closes. A click outside first closes an open menu (dates, labels), then the window, without adding anything. In a project it is validated at once (it skips the Inbox).</li>
+		<li>Next to it, on a computer: the order (<b>Oldest first</b>, <b>Newest first</b>, <b>My order</b>: drag a task onto another to put it just before or after, which switches to My order), <b>Completed</b> and <b>Pending</b> (shown when highlighted, with their number; remembered on each device), <b>Mark pending</b> and <b>Archive</b> (or <b>Restore</b>). On the phone, the same options are under <b>⋯</b>.</li>
+		<li><b>Sections</b> group the tasks under headings ("New section…" at the bottom). <b>Drag a section by its title bar</b> to move it (its handle ⠿ on the left appears when you point at it; on the phone it is always there, faintly, and is what you drag); a line shows where it will go. <b>›</b> folds it (remembered on each device); <b>+</b> adds a task to it; <b>⋯</b> has Move up, Move down and Delete (its tasks stay in the project). Click its name to rename it. Move a task to another section by dragging it, with <b>Section</b> on its page, or several at once (below). Sections, the tasks in them and your order belong to your account: you see the same on the computer and on the phone.</li>
+		<li><b>Sub-projects</b>: at the bottom, <b>Sub-projects (n)</b> lists the open projects inside it (not pending, not archived; sub-projects of sub-projects too, indented), each with its tasks. Click a name to open it; click "Sub-projects" to fold the list away.</li>
+	</ul>
+	<h3>Several tasks at once, and Undo</h3>
+	<ul>
+		<li><b>Several tasks at once</b>: tick the small box on the left of a task (it appears when you point at the task). While tasks are ticked, a click anywhere on a task only ticks or unticks it, so nothing gets changed by mistake. <kbd>Shift</kbd>+click ticks a range; <b>Select all</b> (or <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>A</kbd>) the whole list. On the phone: long-press a task → <b>Select several tasks</b>, then tap the others.</li>
+		<li>A white bar at the bottom acts on all of them: <b>Complete</b>; <b>Move</b> (to a project, or a section of this project); <b>Labels</b> (✓ means all of them have it, – some do; a click adds it to all, or takes it off all); <b>Due</b> (today, tomorrow, in a week, a date, none); then in one click <b>Pending</b> (or <b>Resume</b> when they are all on hold), <b>Shopping</b> (on or off the list), <b>Inbox</b> (back to the Inbox); <b>Abandon</b> (to the Bin, as abandoned); <b>Bin</b>. Each action ends the selection. You can also drag the ticked tasks together.</li>
+		<li>To stop selecting: <b>×</b> on the bar, <kbd>Esc</kbd>, or a click on an empty part of the page. <b>Bin</b> asks for no confirmation: <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Z</kbd> (or ↶) brings the tasks back.</li>
+		<li style="list-style:none"><figure style="width:82%;margin:6px 0"><img src="desk-select.png" alt=""><figcaption>Two tasks ticked; the bar at the bottom, its Labels menu open.</figcaption></figure></li>
+		<li><b>Undo</b> any change to your tasks with <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Z</kbd> or the ↶ button in the top bar; <b>Redo</b> with <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>. A change made to several tasks at once is undone in one go. The last 50 changes are kept until you close the app.</li>
+	</ul>
+</section>
+
+<!-- ============================================================ 8 -->
+<section>
+	<h2><span class="n">8</span>A task in detail</h2>
+	<p class="lead">From top to bottom: the title, two switches, its details one per line, the notes, then Duplicate and Delete. Changes are saved as you go.</p>
+	<figure style="width:72%"><img src="desk-task.png" alt=""><figcaption>A task's page.</figcaption></figure>
+	<table>
+		<tr><th>Part</th><th>What for</th></tr>
+		<tr><td>Circle, title</td><td>Complete it; click the title to edit it (long titles use as many lines as needed; its labels stay in view, + adds one).</td></tr>
+		<tr><td><b>Shopping</b> switch</td><td>On: it is on the Shopping list (and leaves the Inbox if it was there). In the New task box, the cart (a grey icon shaped like Add; filled once ticked) with a title typed adds it to the Shopping list at once. Giving a task in the Inbox the <span class="chip" style="--c:#f2a93b">shopping</span> label does the same.</td></tr>
+		<tr><td><b>Pending</b> switch</td><td>On: the task is on hold (waiting for something, not now). It then shows nowhere, whatever its labels or dates: not on the home page, Tomorrow, Upcoming, the filters, the labels' pages, nor in the Weekly review except in "Pending tasks". On its project's page, <b>Pending</b> (⋯ on the phone) shows it, greyed out at the end. Switch it off to resume it. <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Z</kbd> undoes it.</td></tr>
+		<tr><td>Project</td><td>Where it belongs, with the project above it ("in HOME"). <b>↩ Inbox</b> sends it back to be defined again.</td></tr>
+		<tr><td>Section</td><td>Only when its project has sections.</td></tr>
+		<tr><td>Labels</td><td>Click a label to remove it; <b>+</b> to add one (type to find one, or create it).</td></tr>
+		<tr><td>Start, Due</td><td>When it becomes relevant; its deadline. Choosing the day is enough (the time is optional: 09:00 for a start, the end of the day for a deadline); × removes the date. What you choose is kept even if you then click elsewhere, here and in a task's date window in the lists. Past due: in red, "Overdue", and labelled <span class="chip" style="--c:#ff473d">overdue</span> by the automations.</td></tr>
+		<tr><td>Remind</td><td>A day and a time: your phone gets a notification then ("Tasks: reminder"; tap it to open the task). It needs your ntfy topic (Settings › Alerts) and the PC on; the text never contains the task. × removes it.</td></tr>
+		<tr><td>Repeat</td><td>Every week (choose the day and time), every month or every year. Completing a repeating task moves it to its next date instead of closing it.</td></tr>
+		<tr><td>Notes</td><td>Anything, in <b>Markdown</b> (point at "Markdown" for a reminder): <code>**bold**</code>, <code>*italic*</code>, lines starting with <code>- </code> for a list, <code># </code> for a title, <code>[text](https://…)</code> for a link. Shown formatted; click the text to edit it (a click on a link opens it, in a new tab).</td></tr>
+		<tr><td><b>🔗 Link a task</b></td><td>Chain tasks in order: <b>Precedes / Follows</b>, then type to pick the other task. Linked tasks are then listed above. With the automations on, completing a task gives <span class="chip" style="--c:#5f5ff6">next-action</span> to the one that follows.</td></tr>
+		<tr><td>Duplicate, Abandon, Delete</td><td>Duplicate makes a copy and opens it. <b>Abandon</b>: it was not done and should not be done any more; it goes to the <b>Bin</b> (marked "Abandoned", kept 30 days), never counts as done (figures, Today's summary), and a repeating task stops repeating. <b>Restore</b> in the Bin brings it back as a task to do. Delete moves it to the Bin and takes you back to the page you came from.</td></tr>
+	</table>
+	<p class="small">A task still to validate shows a "Validate definition" bar under its title (<kbd>v</kbd>). <kbd>Esc</kbd> goes back.</p>
+</section>
+
+<!-- ============================================================ 9 -->
+<section>
+	<h2><span class="n">9</span>Labels, filters and search</h2>
+	<h3>Labels</h3>
+	<ul>
+		<li>All your labels are in the menu, under <b>Labels</b>, sorted by colour then name, with a box to find one. Click one to see its tasks.</li>
+		<li>The first line holds the labels the app and the automations act on, in this order: <b>today</b> (tomorrow's / today's list), <b>week</b> (the week's list), <b>next-action</b>, <b>p1</b>, <b>overdue</b> and <b>last-day</b> (set by the server from due dates), <b>waiting-for</b>, <b>shopping</b>. Keep their names: renaming one stops what it drives. Your other labels come below, on their own line.</li>
+		<li><b>Several labels at once</b>: on a label's page, click other labels in the menu to add them (marked), or a marked one to take it off; the list follows at once. On the page itself: <b>×</b> takes a label off, <b>+</b> adds one (the way to do it on the phone), and <b>All of them</b> / <b>Any of them</b>.</li>
+		<li><b>+</b> creates a label. Right-click a label to rename it or change its colour.</li>
+		<li>On a task: the <b>+</b> next to its labels, or <kbd>l</kbd>.</li>
+	</ul>
+	<h3>Saved filters</h3>
+	<ul>
+		<li>In the menu, under <b>Filters</b>: lists you define once and reuse (for example "Waiting for", "Groceries", "This week"). <b>+</b> creates one; drag them into your order.</li>
+		<li>They work offline too.</li>
+		<li>For a quick, one-off search, the filter box on the home page is simpler (section 6).</li>
+	</ul>
+	<h3>Shopping list</h3>
+	<p>Tick the <b>cart</b> when you add a task (or on its page) for anything to buy. It gets the <span class="chip" style="--c:#f2a93b">shopping</span> label, skips the Inbox (it goes to a <b>Shopping</b> project unless it already has a project) and stays out of the home page blocks. <b>🛒 Shopping</b> in the menu (or <kbd>g</kbd> <kbd>p</kbd>) opens the list, grouped by shop: give an item a shop's label (biocoop, decathlon…) to file it under that shop. Tap the circle to tick an item off; ticked items stay at the bottom for a day, to undo a wrong tap.</p>
+	<h3>Search</h3>
+	<p>The search box at the top (or <kbd>/</kbd>, <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd>) finds any task by its title, in every view, and remembers your recent searches.</p>
+</section>
+
+<!-- ============================================================ 10 -->
+<section>
+	<h2><span class="n">10</span>Tomorrow and the Weekly review</h2>
+	<div class="two">
+		<figure><img src="desk-tomorrow.png" alt=""><figcaption>Tomorrow (in the menu, or <kbd>g</kbd> <kbd>t</kbd>).</figcaption></figure>
+		<figure><img src="desk-weekly.png" alt=""><figcaption>Weekly review (calendar icon, or <kbd>g</kbd> <kbd>w</kbd>).</figcaption></figure>
+	</div>
+	<h3>Tomorrow: each evening, 5 minutes</h3>
+	<p>Only what is ahead: no figures, nothing already done. In place of a task's circle, the <b>moon</b> (as for Tomorrow in the menu) puts it on tomorrow's list (the <span class="chip" style="--c:#000">today</span> label); filled, it is on the list, and a click takes it off.</p>
+	<ol class="steps">
+		<li><b>Clean the Inbox</b>: <b>Open</b> takes you to the Inbox to sort what waits there; its box ticks itself once the Inbox is empty, and you can tick or untick it yourself (kept until the app is reloaded).</li>
+		<li><b>Your list for tomorrow</b>: what you have chosen. A note appears when it gets long.</li>
+		<li><b>To consider</b>, in groups: <b>Planned for today, not done</b> (a filled moon = still on the list for tomorrow), <b>Due by tomorrow</b> (overdue included), <b>This week</b> (the week's list), <b>Next actions</b> (<span class="chip" style="--c:#5f5ff6">next-action</span>, <span class="chip" style="--c:#d92c22">p1</span>, the "Single tasks" projects), <b>Due in the next two weeks</b>, <b>Due later</b>, <b>Recently added</b>. Click a group's name to fold or unfold it.</li>
+	</ol>
+	<p class="small">Never shown: tasks in the Inbox, on hold, shopping items, tasks waiting for someone, tasks that start after tomorrow, and the projects your saved filter "Tomorrow" leaves out. What was planned each day is remembered in your account, on all your devices.</p>
+	<h3>Weekly review: once a week, 20 minutes (on Sundays, instead of Tomorrow)</h3>
+	<p>Three steps, only what is ahead. Click the number of step 1 or 2 to tick it for the week (on all your devices).</p>
+	<ol class="steps">
+		<li><b>Clean up</b>: empty your <b>Desktop</b> and <b>Downloads</b>, sort your <b>Emails</b> (tick each one; the ticks start again every Monday), and empty the <b>Inbox</b> (<b>Open</b> takes you there; its box ticks itself once the Inbox is empty, or tick it yourself: kept until the app is reloaded).</li>
+		<li><b>Projects and tasks on hold</b>: projects without a next action (give each one), pending projects (<b>Activate</b>), pending tasks (<b>Resume</b>), waiting for (anyone to chase?), and tasks untouched for 60 days (<b>Abandon</b> or <b>Bin</b>).</li>
+		<li><b>Plan the coming week</b>: your list for the week, then, in groups: <b>Planned this week, not done</b> (on a day's list in the last 7 days or on the week's list, still to do), overdue, due in the next 7 days, and the same groups as Tomorrow.</li>
+	</ol>
+	<p class="small">In place of the circle of every task of step 3: the <b>calendar</b> (as for Weekly review in the menu) puts it on the week's list (the <span class="chip" style="--c:#1e88e5">week</span> label: the home page's This week block, and on <b>Upcoming</b> the tasks with no day yet); the <b>moon</b> puts it on tomorrow's list, so on Sundays you plan Monday here too. Filled means chosen; a click takes it off. On the phone they sit one above the other.</p>
+	<h3>Upcoming: plan each day ahead</h3>
+	<figure style="width:62%"><img src="desk-upcoming.png" alt=""><figcaption>Upcoming (in the menu, or <kbd>g</kbd> <kbd>c</kbd>).</figcaption></figure>
+	<ul>
+		<li>At the top, the <b>next 7 days</b> in a strip: a dot under a day with something on it; click a day to go to it.</li>
+		<li><b>Overdue</b> (if any), then <b>To schedule</b>: the week's list (starred in the Weekly review's Plan the week) with no day yet.</li>
+		<li>Then <b>every day</b>, one by one, for two months at least and up to your last planned task, each with the tasks <b>planned</b> for it and those <b>due</b> that day (flagged "due"). The name of each new month separates them.</li>
+		<li>Every task with a due date is there, even one that has not started yet (it stays out of your other lists until it starts).</li>
+		<li><b>Plan a task for a day</b>: the calendar button at the end of its row (it appears when you point at the row), or drag the row onto a day (computer). Its start date becomes that day (the time it had is kept, 09:00 otherwise): it reaches the home page that day.</li>
+		<li><b>+</b> next to a day (or a block): a new task for that day, in the same small window as on a project's page (choose its project there; the last one chosen is offered next time).</li>
+		<li>The circle completes a task; its name opens it. Tasks on hold are not shown; a task of the Inbox only once a day was chosen for it.</li>
+	</ul>
+</section>
+
+<!-- ============================================================ 11 + 12 -->
+<section>
+	<h2><span class="n">11</span>The Bin</h2>
+	<p>Deleted and abandoned tasks wait <b>30 days</b> in the Bin (in the menu, under Weekly review, or <kbd>g</kbd> <kbd>b</kbd>), each with the days left, then disappear for good. <b>Restore</b> puts a task back in the Inbox. Right after deleting, an <b>Undo</b> button also appears for a few seconds.</p>
+
+	<section class="flow">
+	<h2><span class="n">12</span>On the phone</h2>
+	<div class="three phone">
+		<figure><img src="phone-home.png" alt=""><figcaption>Home page.</figcaption></figure>
+		<figure><img src="phone-menu.png" alt=""><figcaption>Long-press a task.</figcaption></figure>
+		<figure><img src="phone-panel.png" alt=""><figcaption>The menu (☰).</figcaption></figure>
+	</div>
+	<ul>
+		<li><b>Tap</b> a task to open it. <b>Long-press</b> it for a quick menu: project, labels, due date (Today, Tomorrow, In a week, any date, none), start date, open, or move to the Bin.</li>
+		<li>The round <b>+</b> creates a task; <b>☰</b> opens the same menu as on a computer (it closes when you pick a page); <b>?</b> opens the Help centre.</li>
+		<li>The <b>back gesture</b> closes what is open (a menu, the New task box, a panel) before leaving the page.</li>
+		<li>Everything else works as on a computer.</li>
+	</ul>
+	</section>
+</section>
+
+<!-- ============================================================ 13 -->
+<section>
+	<h2><span class="n">13</span>Automations</h2>
+	<p class="lead">Small jobs the server does for you every minute. They are <b>on</b> from the start: nothing to do. To stop them: <b>Help (?) → Automations → Turn off</b> (and <b>Turn on</b> to start them again).</p>
+	<table>
+		<tr><th>Automation</th><th>What it does</th></tr>
+		<tr><td>Next-action chain</td><td>When you complete a task, the task that follows it (relation "precedes / follows") gets <span class="chip" style="--c:#5f5ff6">next-action</span> once all the tasks before it are done.</td></tr>
+		<tr><td>Clean-up</td><td>A completed task loses <span class="chip" style="--c:#5f5ff6">next-action</span>, <span class="chip" style="--c:#000">today</span>, <span class="chip" style="--c:#ff473d">overdue</span> and <span class="chip" style="--c:#ffab40">last-day</span>.</td></tr>
+		<tr><td>Overdue / last-day</td><td><span class="chip" style="--c:#ff473d">overdue</span> when the due date has passed, <span class="chip" style="--c:#ffab40">last-day</span> on the day itself, so they show in Red.</td></tr>
+		<tr><td>Start date</td><td>A task created without a start date gets one.</td></tr>
+		<tr><td>Pending projects</td><td>Tasks of a pending project stay out of sight until their start date; then the project comes back by itself.</td></tr>
+		<tr><td>Duplicate labels</td><td>Two labels with the same name are merged, once a day.</td></tr>
+	</table>
+	<p class="small">They work only on your own account, with their own copy of the four labels (created for you if missing). The app gives the server a key that only lets it do these jobs on your account; turning them off deletes that key, and they stay off until you turn them on again.</p>
+</section>
+
+<!-- ============================================================ 14 -->
+<section>
+	<h2><span class="n">14</span>Offline, sync and updates</h2>
+	<ul>
+		<li><b>Each device keeps a full copy of your tasks.</b> The app opens instantly and works without internet: you can read, add, change, complete and delete.</li>
+		<li>Changes made offline <b>wait on the device</b> ("N changes waiting" at the top right) and are sent as soon as the server can be reached. Coming back to the app syncs at once; otherwise every few minutes.</li>
+		<li>Each device syncs with the server, not with the other devices: a change made on your phone while it is offline reaches your computer only once the phone is back online.</li>
+		<li>If the same task was changed on two devices meanwhile, the last change sent wins.</li>
+		<li><b>Updates</b> install themselves: the app moves to a new version when you are not typing. Nothing waiting to be sent is lost.</li>
+		<li>After an update, a small <b>What's new</b> box at the bottom left says what changed. <b>Got it</b> closes it (each device shows it once); <b>All updates</b> opens the Updates tab of the Help centre, which lists every update and searches them.</li>
+		<li>The very first sign-in on a new device needs the server to be reachable.</li>
+	</ul>
+	<div class="box warn">
+		<h4>When the server is off</h4>
+		<p>The server is a computer at Lou's. If it is off or offline, the app keeps working on your devices and your changes wait; you simply won't see changes made on your other devices until it is back.</p>
+	</div>
+</section>
+
+<!-- ============================================================ 15 -->
+<section>
+	<h2><span class="n">15</span>The Help centre (?)</h2>
+	<p class="lead">The <b>?</b> button at the top right (or the <kbd>?</kbd> key): everything about the app itself, in four tabs. The red or orange bar under the top bar, and the sync dot, open it on <b>Status</b>.</p>
+	<div class="two">
+		<figure><img src="desk-help.png" alt=""><figcaption>Help.</figcaption></figure>
+		<figure><img src="desk-help2.png" alt=""><figcaption>Updates, searched for "phone".</figcaption></figure>
+	</div>
+	<table>
+		<tr><th>Tab</th><th>What is in it</th></tr>
+		<tr><td><b>Help</b></td><td><b>Install the app</b> (until it is installed on this device: installs it, or shows the steps for your browser); how the app is organised; <b>Open the user guide</b> (this guide, on any device); the keyboard shortcuts (computer), or how to put "New task" on your home screen (phone).</td></tr>
+		<tr><td><b>Updates</b></td><td>Every update of the app, newest first; those you have not seen yet are marked <b>New</b>. Type in the box to keep only the changes that mention every word typed (capitals and accents ignored); the words are highlighted. <kbd>g</kbd> <kbd>u</kbd> opens it.</td></tr>
+		<tr><td><b>Status</b></td><td>Is the server online; last sync and changes waiting; the server's health and your own devices' (any problem is explained, with what to do). <b>Got it</b> hides a warning for you, on all your devices; it comes back if the situation changes. Lou, who runs the server, sees the same warnings and is warned too. <b>Run a health check</b>. <b>Error report (30 days)</b>: if something goes wrong, one click gathers what happened; send it to Lou.</td></tr>
+		<tr><td><b>Settings</b></td><td><b>Alerts</b>: optional, an <b>ntfy</b> topic (free app <i>ntfy</i>) to get a short notification on your phone if a device cannot sync for 15 minutes or gets signed out, and for the reminders you set on tasks; the text never contains your tasks; <b>Save</b>, then <b>Test</b>. <b>Automations</b>: on by default, turn them off or on again (section 13). <b>My data</b>: download a copy (next page). <b>Appearance</b> (on each device): <b>Light</b>, <b>Black</b> (a black page with white text and dot-matrix titles, in the spirit of Nothing phones) or <b>Like the device</b> (light by day, black when the phone or computer is set to dark), and <b>Labels in shades of grey</b> (no colours). With Black, the app's icon is black too: remove the app from the home screen and add it again to get it. <b>Label colours</b>: the order of the colours labels are sorted by. <b>Maintenance</b>: merge duplicate labels or projects; "Fresh start" is a radical reset you should not need. <b>Account</b>: <b>Sign out</b> (changes not yet sent are kept and sent after you sign in again), and the app's version. <kbd>g</kbd> <kbd>s</kbd> opens it.</td></tr>
+	</table>
+</section>
+
+<!-- ============================================================ 16 -->
+<section>
+	<h2><span class="n">16</span>Your data and privacy</h2>
+	<h3>Download a copy</h3>
+	<p><b>? → Settings → My data</b>:</p>
+	<ul>
+		<li><b>Download a table (Excel)</b>: one row per task with its project, labels, dates, notes and whether it is in the Bin. Opens in Excel, Numbers or LibreOffice.</li>
+		<li><b>Download everything</b>: a complete file of your account (tasks, Bin, projects, labels, filters), to keep or to restore from.</li>
+	</ul>
+	<p>The copy is made from what your device holds, so it works even when the server is off, and it contains <b>only your account</b>. If your last copy is more than a month old, the app reminds you (at most once a week).</p>
+	<h3>Where your data lives</h3>
+	<ul>
+		<li>Your tasks are stored on Lou's server and copied on each of your devices. Other users of the same server cannot see them, and you cannot see theirs.</li>
+		<li>The server is backed up every night, and copied regularly to another computer of Lou's.</li>
+		<li>As the person running the server, Lou could technically access the data stored on it. If that matters for a task, keep it elsewhere.</li>
+		<li>The app shows no adverts, sends nothing to third parties, and uses no tracking.</li>
+	</ul>
+</section>
+
+<!-- ============================================================ 17 -->
+<section>
+	<h2><span class="n">17</span>Keyboard shortcuts</h2>
+	<p class="lead">On a computer. They are also in the Help centre (<kbd>?</kbd>), Help tab.</p>
+	<div class="two">
+		<table>
+			<tr><th>Key</th><th>Does</th></tr>
+			<tr><td><kbd>n</kbd></td><td>New task</td></tr>
+			<tr><td><kbd>/</kbd> or <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd></td><td>Search</td></tr>
+			<tr><td><kbd>↑</kbd> <kbd>↓</kbd> or <kbd>k</kbd> <kbd>j</kbd></td><td>Move in a list</td></tr>
+			<tr><td><kbd>Enter</kbd> or <kbd>o</kbd></td><td>Open the task</td></tr>
+			<tr><td><kbd>x</kbd> or <kbd>Space</kbd></td><td>Complete</td></tr>
+			<tr><td><kbd>v</kbd></td><td>Validate (Inbox)</td></tr>
+			<tr><td><kbd>r</kbd></td><td>Rename</td></tr>
+			<tr><td><kbd>l</kbd></td><td>Labels</td></tr>
+			<tr><td><kbd>m</kbd></td><td>Move to another project</td></tr>
+			<tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+click · <kbd>Shift</kbd>+click · <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>A</kbd></td><td>Select several tasks · a range · all (while selecting)</td></tr>
+		</table>
+		<table>
+			<tr><th>Key</th><th>Does</th></tr>
+			<tr><td><kbd>1</kbd> · <kbd>2</kbd></td><td>Set Pro · Perso (Inbox)</td></tr>
+			<tr><td><kbd>i</kbd></td><td>Back to the Inbox</td></tr>
+			<tr><td><kbd>Backspace</kbd></td><td>Move to the Bin</td></tr>
+			<tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Z</kbd> · +<kbd>Shift</kbd></td><td>Undo · Redo</td></tr>
+			<tr><td><kbd>Esc</kbd></td><td>Close, or go back</td></tr>
+			<tr><td><kbd>g</kbd> <kbd>h</kbd></td><td>Home</td></tr>
+			<tr><td><kbd>g</kbd> <kbd>i</kbd> · <kbd>g</kbd> <kbd>p</kbd></td><td>Inbox · Shopping</td></tr>
+			<tr><td><kbd>g</kbd> <kbd>t</kbd></td><td>Tomorrow</td></tr>
+			<tr><td><kbd>g</kbd> <kbd>c</kbd></td><td>Upcoming</td></tr>
+			<tr><td><kbd>g</kbd> <kbd>w</kbd></td><td>Weekly review</td></tr>
+			<tr><td><kbd>g</kbd> <kbd>b</kbd></td><td>Bin</td></tr>
+			<tr><td><kbd>?</kbd> · <kbd>g</kbd> <kbd>u</kbd> · <kbd>g</kbd> <kbd>s</kbd></td><td>Help centre · Updates · Settings</td></tr>
+		</table>
+	</div>
+</section>
+
+<!-- ============================================================ 18 -->
+<section>
+	<h2><span class="n">18</span>Questions and problems</h2>
+	<table>
+		<tr><th>If…</th><th>Then</th></tr>
+		<tr><td>A task disappeared from the Inbox</td><td>It was validated, completed or deleted. Look in its project (Completed, at the top of the project page), or in the Bin.</td></tr>
+		<tr><td>I can't validate a task</td><td>Give it a project first.</td></tr>
+		<tr><td>My other device doesn't show a change</td><td>Open the app on the device where you made it, so it can send it (the dot at the top right must say "Up to date"), then open it on the other one.</td></tr>
+		<tr><td>"Changes waiting" stays for long</td><td>The server is probably off or your internet is down. Nothing is lost: they will be sent later.</td></tr>
+		<tr><td>A coloured banner at the top</td><td>A message about the server: tap it for details. Orange is a warning, red a problem. Nothing to do on your side unless it says so.</td></tr>
+		<tr><td>A page shows an error</td><td>Press <b>Reload</b>. Your changes are kept on the device.</td></tr>
+		<tr><td>I am asked to sign in again</td><td>Sign in: changes made meanwhile are sent afterwards.</td></tr>
+		<tr><td>Something else went wrong</td><td><b>? → Status → Error report (30 days)</b>, then send the text to Lou.</td></tr>
+		<tr><td>I lost my phone</td><td>Sign in on the new one: everything comes back from the server. Consider changing your password.</td></tr>
+	</table>
+	<div class="box tip" style="margin-top:8mm">
+		<h4>Need help?</h4>
+		<p>Ask Lou, who runs the server. For a problem, the <b>Error report</b> (Help) is the most useful thing to send.</p>
+	</div>
+</section>
+
+</body>
+</html>

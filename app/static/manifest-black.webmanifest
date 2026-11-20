@@ -1,0 +1,76 @@
+{
+ "name": "Tasks",
+ "short_name": "Tasks",
+ "description": "Personal task manager (Vikunja backend)",
+ "start_url": "/",
+ "display": "standalone",
+ "background_color": "#000000",
+ "theme_color": "#000000",
+ "lang": "en-GB",
+ "scope": "/",
+ "id": "/",
+ "categories": [
+  "productivity"
+ ],
+ "shortcuts": [
+  {
+   "name": "New task",
+   "short_name": "New task",
+   "url": "/quick-add",
+   "icons": [
+    {
+     "src": "icons/new-task-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    },
+    {
+     "src": "icons/new-task-96.png",
+     "sizes": "96x96",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "Weekly review",
+   "short_name": "Weekly",
+   "url": "/weekly"
+  },
+  {
+   "name": "Upcoming",
+   "short_name": "Upcoming",
+   "url": "/upcoming"
+  },
+  {
+   "name": "Tomorrow",
+   "short_name": "Tomorrow",
+   "url": "/today-review"
+  }
+ ],
+ "share_target": {
+  "action": "/quick-add",
+  "method": "GET",
+  "params": {
+   "title": "title",
+   "text": "text",
+   "url": "url"
+  }
+ },
+ "icons": [
+  {
+   "src": "icons/icon-192-black.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/icon-512-black.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/icon-512-maskable-black.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

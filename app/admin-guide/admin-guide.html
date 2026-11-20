@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Tasks – Admin guide</title>
+<style>
+@page { size: A4; margin: 18mm 17mm 18mm 17mm; }
+:root { --ink: #16161a; --dim: #5b5b66; --faint: #8b8b96; --line: #e6e6ea; --soft: #f5f5f7; --accent: #4f46e5; --red: #e5484d; --green: #2f9e5b; }
+* { box-sizing: border-box; }
+html { font-family: 'Inter', sans-serif; color: var(--ink); font-size: 10.2pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; }
+h1, h2, h3 { font-family: 'Inter Display', 'Inter', sans-serif; letter-spacing: -0.015em; }
+h2 { font-size: 19pt; font-weight: 650; margin: 0 0 4mm; padding-top: 1mm; }
+h2 .n { color: var(--accent); font-weight: 600; margin-right: 3mm; }
+h3 { font-size: 12pt; font-weight: 650; margin: 6mm 0 2mm; }
+p { margin: 0 0 2.6mm; }
+ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+li { margin: 0 0 1.2mm; }
+section { break-before: page; }
+section.flow { break-before: auto; margin-top: 10mm; }
+.lead { font-size: 11.2pt; color: var(--dim); margin-bottom: 5mm; }
+kbd { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.6pt; background: var(--soft); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0.2mm 1.4mm; white-space: nowrap; }
+code { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.8pt; background: var(--soft); border-radius: 3px; padding: 0.2mm 1.2mm; }
+table.browsers td { padding-top: 1.2mm; padding-bottom: 1.2mm; }
+table.browsers td.yes { color: #1f7a3a; font-weight: 600; }
+table.browsers td.part { color: #a15c00; font-weight: 600; }
+.chip { display: inline-block; font-size: 8.4pt; padding: 0.1mm 2.2mm 0.2mm; border-radius: 10px; background: #eef0ff; white-space: nowrap; }
+.chip::before { content: ''; display: inline-block; width: 1.6mm; height: 1.6mm; border-radius: 50%; background: var(--c, #5f5ff6); margin-right: 1.2mm; vertical-align: 0.15mm; }
+figure { margin: 3mm 0 5mm; break-inside: avoid; }
+figure img { width: 100%; display: block; border: 1px solid var(--line); border-radius: 3mm; box-shadow: 0 1mm 4mm rgba(0,0,0,0.06); }
+figcaption { font-size: 8.6pt; color: var(--faint); margin-top: 1.6mm; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; align-items: start; }
+.three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; align-items: start; }
+.phone img { border-radius: 5mm; }
+.box { border: 1px solid var(--line); border-radius: 3mm; padding: 3.5mm 4.5mm; margin: 3mm 0 4mm; break-inside: avoid; background: #fff; }
+.box.tip { background: #f3f4ff; border-color: #dfe1ff; }
+.box.warn { background: #fff7ec; border-color: #ffe2b8; }
+.box h4 { margin: 0 0 1.5mm; font-size: 10.4pt; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.4pt; break-inside: auto; }
+th { text-align: left; font-weight: 600; color: var(--dim); font-size: 8.6pt; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1.5px solid var(--ink); padding: 1.5mm 2mm; }
+td { border-bottom: 1px solid var(--line); padding: 1.8mm 2mm; vertical-align: top; }
+tr { break-inside: avoid; }
+td:first-child { white-space: nowrap; }
+section:nth-of-type(2) td:first-child { white-space: normal; }
+.steps { counter-reset: s; list-style: none; padding: 0; }
+.steps > li { counter-increment: s; position: relative; padding-left: 9mm; margin-bottom: 2.6mm; }
+.steps > li::before { content: counter(s); position: absolute; left: 0; top: -0.2mm; width: 6mm; height: 6mm; border-radius: 50%; background: var(--ink); color: #fff; font-size: 8.6pt; font-weight: 600; text-align: center; line-height: 6mm; }
+/* cover */
+.cover { height: 257mm; display: flex; flex-direction: column; break-after: page; }
+.cover .brand { display: flex; align-items: center; gap: 3mm; font-weight: 650; font-size: 12pt; }
+.cover .logo { width: 10mm; height: 10mm; border-radius: 2.5mm; background: #2f6fed; color: #fff; display: grid; place-items: center; font-size: 8pt; font-weight: 700; line-height: 1; text-align: center; }
+.cover h1 { font-size: 40pt; font-weight: 700; margin: 26mm 0 4mm; line-height: 1.05; letter-spacing: -0.03em; }
+.cover .sub { font-size: 14pt; color: var(--dim); max-width: 140mm; }
+.cover figure { margin-top: auto; }
+.cover .meta { font-size: 9pt; color: var(--faint); margin-top: 6mm; display: flex; justify-content: space-between; }
+/* contents */
+.toc { columns: 2; column-gap: 10mm; padding: 0; list-style: none; counter-reset: t; }
+.toc li { counter-increment: t; break-inside: avoid; padding: 1.6mm 0; border-bottom: 1px solid var(--line); }
+.toc li::before { content: counter(t); display: inline-block; width: 7mm; color: var(--accent); font-weight: 600; }
+.flow-diagram { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 4mm 0 5mm; }
+.flow-diagram div { background: var(--soft); border-radius: 3mm; padding: 3mm; font-size: 9pt; position: relative; }
+.flow-diagram b { display: block; font-size: 10.5pt; margin-bottom: 1mm; }
+.flow-diagram div:not(:last-child)::after { content: '→'; position: absolute; right: -3mm; top: 50%; transform: translate(50%, -50%); color: var(--faint); font-size: 12pt; }
+.small { font-size: 8.8pt; color: var(--dim); }
+.arch { display: grid; grid-template-columns: 1fr 22mm 1.6fr; gap: 3mm; align-items: center; margin: 2mm 0 5mm; }
+.arch .card { background: var(--soft); border-radius: 3mm; padding: 2.6mm 3mm; font-size: 8.8pt; margin-bottom: 2.5mm; }
+.arch .card b { display: block; font-size: 9.8pt; margin-bottom: 0.6mm; }
+.arch .arrow { text-align: center; font-size: 8pt; color: var(--faint); }
+table.scripts td:nth-child(2) { text-align: center; color: var(--green); font-weight: 600; }
+</style>
+</head>
+<body>
+<!-- ============================================================ COVER -->
+<div class="cover">
+	<div class="brand"><div class="logo">To<br>Do</div> Tasks</div>
+	<h1>Admin guide</h1>
+	<p class="sub">For Lou, who runs the server: how the system fits together, how to manage it from the Mac through Claude, backups, updates, users, alerts and what to do when something goes wrong.</p>
+	<div class="box tip" style="margin-top:14mm">
+		<h4>The short version</h4>
+		<ul>
+			<li>The PC <b>pc-lou</b> is the server. It runs everything by itself: backups, checks, automations, updates.</li>
+			<li>You manage it <b>from the Mac</b>: ask Claude in the conversation linked to the PC. The PC applies what Claude puts in place within 2 minutes.</li>
+			<li>Something is wrong? <b>Help (?) → Status</b> in the app says what, and what to do. First fix: <b>restart the server</b>.</li>
+			<li>Your data is in one file on the PC, backed up every night and copied to the Mac every day.</li>
+		</ul>
+	</div>
+	<div class="meta" style="margin-top:auto"><span>Version of 10 November 2026</span><span>Server folder: Documents\todo-server on pc-lou</span></div>
+</div>
+
+<!-- ============================================================ CONTENTS -->
+<section style="break-before: auto">
+	<h2>Contents</h2>
+	<ol class="toc">
+		<li>The system at a glance</li>
+		<li>Managing everything from the Mac</li>
+		<li>Leaving the PC on its own</li>
+		<li>What runs by itself</li>
+		<li>Health checks and alerts</li>
+		<li>Backups, copies and restoring</li>
+		<li>Updates and undo</li>
+		<li>Other users</li>
+		<li>The automations</li>
+		<li>Scripts reference</li>
+		<li>Moving to a new PC</li>
+		<li>Troubleshooting</li>
+		<li>Security</li>
+		<li>Keeping the guides up to date</li>
+	</ol>
+</section>
+
+<!-- ============================================================ 1 -->
+<section>
+	<h2><span class="n">1</span>The system at a glance</h2>
+	<p class="lead">One always-on Windows PC holds the data and serves the app. Every device keeps a full copy and syncs with the PC.</p>
+	<div class="arch">
+		<div class="col">
+			<div class="card"><b>Your devices</b>Mac (Brave app), phone (Firefox app), PC browser, other users' devices.<br><span class="small">Each keeps a full copy of its account and a queue of unsent changes: works offline.</span></div>
+		</div>
+		<div class="arrow">HTTPS<br>Tailscale Funnel<br>→</div>
+		<div class="col">
+			<div class="card"><b>:8443 → App server</b><code>tools\serve_app.py</code> on 127.0.0.1:5173. Serves the app, <code>/health.json</code>, receives device reports.</div>
+			<div class="card"><b>:443 → Vikunja 2.8.0</b><code>vikunja\vikunja.exe</code> on 127.0.0.1:3456. Accounts, tasks, API.<br>Data: <code>vikunja\db\vikunja.db</code> (SQLite).</div>
+			<div class="card"><b>Scheduled tasks</b>Vikunja · Tasks app · Vikunja backup (03:00) · Tasks health check (hourly) · Tasks automations · Tasks auto-update (every minute) · weekly safeguard · alerts.</div>
+		</div>
+	</div>
+	<table>
+		<tr><th>What</th><th>Where</th></tr>
+		<tr><td>The app (all devices)</td><td><code>https://pc-lou.tailc45f62.ts.net:8443</code></td></tr>
+		<tr><td>Vikunja's own pages</td><td><code>https://pc-lou.tailc45f62.ts.net</code> (passwords, two-factor, API tokens, project sharing)</td></tr>
+		<tr><td>The app, on the PC itself</td><td><code>http://127.0.0.1:5173</code> (a browser on the PC cannot use its own public address)</td></tr>
+	</table>
+	<h3>The folder: <code>Documents\todo-server\</code></h3>
+	<table>
+		<tr><th>Folder</th><th>Holds</th></tr>
+		<tr><td><code>app\</code>, <code>app-previous\</code>, <code>app-source\</code></td><td>The live app, the version before (for rollback), the source code</td></tr>
+		<tr><td><code>vikunja\</code></td><td>The server, its settings (<code>run-vikunja.cmd</code>, with the server secret), its log, <code>db\vikunja.db</code></td></tr>
+		<tr><td><code>backups\</code></td><td>Nightly database copies, 30 kept</td></tr>
+		<tr><td><code>state\</code></td><td>Health report, tokens, automation memory per account, device reports, auto-update results</td></tr>
+		<tr><td><code>requests\</code>, <code>logs\</code></td><td>Requests from Claude and their results; one log per script run, <code>health.log</code>, <code>automations.log</code></td></tr>
+		<tr><td><code>tools\</code>, <code>automations\</code>, <code>scripts\</code>, <code>mac\</code>, <code>docs\</code></td><td>Server programs, the GTD automations, everything you run, scripts for the Mac, the documentation (both guides)</td></tr>
+	</table>
+</section>
+
+<!-- ============================================================ 2 -->
+<section>
+	<h2><span class="n">2</span>Managing everything from the Mac</h2>
+	<p class="lead">Open the Claude conversation linked to the PC (from the Mac or the phone) and ask in plain words. Claude puts files on the PC; the PC's task <b>Tasks auto-update</b> applies them within 2 minutes; Claude reads the result back to you.</p>
+	<table>
+		<tr><th>Ask Claude</th><th>What happens on the PC</th></tr>
+		<tr><td>"Change the app so that…"</td><td>Claude changes the code, tests it, puts <code>app-next.zip</code> on the PC. It is installed (<code>deploy-app</code>, previous version kept, put back by itself if the new one does not answer). Your devices update themselves.</td></tr>
+		<tr><td>"Run a health check"</td><td><code>health-check-now</code></td></tr>
+		<tr><td>"Restart the server"</td><td><code>restart-server</code>: Vikunja, app server, public addresses, then a check</td></tr>
+		<tr><td>"Make a backup"</td><td><code>backup-now</code></td></tr>
+		<tr><td>"Update Vikunja" (optionally "to v2.8.0")</td><td><code>update-vikunja</code>: tested on a copy of your data first, goes back by itself if anything fails</td></tr>
+		<tr><td>"Repair the services"</td><td><code>repair-services</code>: re-creates scheduled tasks, Funnel, power settings</td></tr>
+		<tr><td>"Put the previous app back"</td><td><code>rollback-app</code></td></tr>
+		<tr><td>"Mark these tasks done / move them"</td><td><code>task-ops</code>: validates, moves to a project and/or completes <b>your own</b> tasks (never deletes), with your account's key on the PC. Claude reads your tasks from a fresh backup first.</td></tr>
+		<tr><td>"Create a user: name, e-mail"</td><td><code>create-user</code>: the PC makes a random temporary password and sends it <b>only to your Mac</b> (Downloads, <code>YYMMDD_Tasks-account-&lt;username&gt;.txt</code>). Claude never sees it.</td></tr>
+	</table>
+	<p>Only these eight requests (and a new app) are accepted; anything else is refused. Results: <code>requests\&lt;name&gt;.result.txt</code>, <code>state\auto-update-last.txt</code>, <code>state\auto-update-history.log</code>, and the <b>Auto-update</b> line in ? → Status.</p>
+	<div class="box warn">
+		<h4>Still needs someone at the PC</h4>
+		<ul>
+			<li><code>rollback-vikunja</code> and <code>restore-backup</code> (they ask for confirmation on purpose).</li>
+			<li>Signing in to Windows after a full shutdown or a power cut; signing in to Tailscale again.</li>
+			<li>Anything needing a password: Claude never types passwords.</li>
+		</ul>
+	</div>
+	<p class="small">For it to work: the PC is on and online, the Claude desktop app is open on it (it starts with Windows), and the conversation is linked to the PC. If Claude says the PC cannot be reached, it is asleep, off, offline or the Claude app is closed.</p>
+</section>
+
+<!-- ============================================================ 3 -->
+<section>
+	<h2><span class="n">3</span>Leaving the PC on its own</h2>
+	<p class="lead">Done once. Then the PC can stay locked in a corner.</p>
+	<ol class="steps">
+		<li><code>scripts\install-auto-update.bat</code> as administrator (done).</li>
+		<li>Charger plugged in. Lid closed is fine on mains power (<code>repair-services</code> sets "do nothing" on lid close).</li>
+		<li>Windows: Settings → Accounts → Sign-in options → <b>"Use my sign-in info to automatically finish setting up after an update"</b>: On. Settings → Windows Update → Advanced options → <b>Active hours</b>: your usual hours.</li>
+		<li>Claude app open, signed in, starting with Windows (Settings → Apps → Startup → Claude: On).</li>
+		<li>Leave it <b>locked</b> (<kbd>Windows</kbd>+<kbd>L</kbd>): not signed out, not shut down.</li>
+		<li>Tailscale admin console (from any device): <b>Disable key expiry</b> for <code>pc-lou</code>.</li>
+		<li>BIOS/UEFI: "power on after a power cut", if the PC has it.</li>
+	</ol>
+	<div class="box tip"><h4>When the PC is off anyway</h4><p>Nothing is lost: every device keeps working offline and sends its changes when the PC is back. Other devices just don't see each other's changes until then. Automations and alerts from the PC pause.</p></div>
+</section>
+
+<!-- ============================================================ 4 -->
+<section>
+	<h2><span class="n">4</span>What runs by itself</h2>
+	<table>
+		<tr><th>What</th><th>When</th><th>Where to see it</th></tr>
+		<tr><td>Database backup (all accounts), checked</td><td>Every night, 03:00, 30 kept</td><td><code>backups\backup.log</code>; Status "Backups"</td></tr>
+		<tr><td>Copy to the Mac (Tailscale): database</td><td>Daily, retried hourly while the Mac sleeps</td><td>Mac Downloads <code>tasks-data-&lt;date&gt;.db</code>; Status "Off-PC copy"</td></tr>
+		<tr><td>Copy to the Mac: whole server</td><td>Every Sunday</td><td>Mac Downloads <code>tasks-server-&lt;date&gt;.zip</code></td></tr>
+		<tr><td>New User guide / Admin guide to the Mac</td><td>Within minutes of each update (when the Mac is awake)</td><td>Mac Downloads <code>YYMMDD_Tasks-user-guide.pdf</code>, <code>YYMMDD_Tasks-admin-guide.pdf</code>; every version also in <code>docs\guides-archive\</code></td></tr>
+		<tr><td>Health check (about 30 checks)</td><td>Every hour</td><td>? → Status; <code>state\health-report.html</code>; <code>logs\health.log</code></td></tr>
+		<tr><td>GTD automations, per account</td><td>Every minute</td><td>Status "Automations"; <code>logs\automations.log</code></td></tr>
+		<tr><td>Task reminders to the phones (since 19 Nov 2026), all accounts</td><td>Every minute (part of the automations, <code>automations\reminders.py</code>)</td><td>ntfy app ("Tasks: reminder", generic text, opens the task); <code>logs\automations.log</code>; sent ones in <code>state\reminders-sent.json</code>. Only accounts with an alert topic; a reminder over 12 h late is dropped</td></tr>
+		<tr><td>Auto-update (new app, requests)</td><td>Every minute, only when something waits</td><td>Status "Auto-update"</td></tr>
+		<tr><td>Power watch (battery)</td><td>Every minute (part of auto-update)</td><td>Urgent phone notification; Status "Power"; <code>state\auto-update-history.log</code></td></tr>
+		<tr><td>Phone alerts (ntfy) and Windows notifications</td><td>When things get worse, and once when all is OK again</td><td>ntfy app; Windows</td></tr>
+		<tr><td>App update on each device</td><td>When opened, or within 10 min</td><td>Status "App versions"</td></tr>
+		<tr><td>Tailscale, its certificates</td><td>By themselves</td><td>Status "Tailscale", "Public … address"</td></tr>
+	</table>
+	<p class="small">Stopped on purpose (22 Oct 2026): the Mac's project-folder mirror and its weekly report. Folders in <code>areas</code> are managed by hand and are never deleted by anything.</p>
+</section>
+
+<!-- ============================================================ 5 -->
+<section>
+	<h2><span class="n">5</span>Health checks and alerts</h2>
+	<p class="lead">Two levels only. <b>Problem</b> (red): act today. <b>Warning</b> (orange): when convenient. Each one says what to do, next to it in ? → Status.</p>
+	<ul>
+		<li><b>Bar</b> under the top bar: the worst one, "+N" if more. <b>Phone</b> (ntfy): generic texts only.</li>
+		<li><b>You see everyone's warnings</b>: the server's, and those of every account (its devices, its automations), before they even tell you. Each one says <b>Seen by:</b> who has it on their screen (everyone; you and Alex; only you; only this device; nobody any more once hidden for everyone), <b>Concerns:</b> everyone (the server), you, or the account's name, and <b>Cause:</b> which device of whom (for example "Alex · phone (Firefox, …)"). The other users see only the server's warnings and their own.</li>
+		<li><b>"Got it"</b> on a warning: <b>Got it (just me)</b> hides it for you only, on all your devices (the others still see it); <b>Got it (everyone)</b> hides it for everyone it concerns. On a warning that concerns only you there is a single "Got it". Another user's "Got it" only ever hides it for them. Either way it comes back if the situation changes. Problems (red) cannot be hidden. Kept in <code>state\acknowledged.json</code> (everyone) and <code>state\acknowledged-users.json</code> (per person). Your own "Got it" also silences your phone alerts and PC notifications for that warning.</li>
+		<li><b>Power</b>: the PC <b>really</b> on battery for <b>1 h 30</b> (since 11 Nov 2026; one hour on 10 Nov), or at <b>20 %</b> or less, is a <b>problem</b> (red), and your phone gets an <b>urgent</b> notification at once (ntfy priority 5), once per stage, checked every minute. Back on the charger: "all OK again". "Really": Windows says the charger is unplugged (its power line flag), and the charge has gone down by 3 points or more. On the night of 10–11 Nov the PC was plugged in and full, but the battery said "discharging" (it rests when full) and five false alarms were logged. Before 10 Nov it was a warning after 4 hours, checked hourly (9–10 Nov: unplugged around 20:00, switched off at 05:07). Each alert is logged in <code>state\auto-update-history.log</code>, with "sent" or "NOT sent (ntfy unreachable)".</li>
+		<li><b>What runs on the PC</b> (since 12 Nov 2026, hourly, seen by you only): <b>PC: the server's programs</b>: a script of the server stuck far too long (the minute update over 45 min, the health check over 30 min, the others over 3 h), or a listener running twice, is <b>stopped</b> by itself (only the server's own; listed in <code>state\pc-load-stopped.log</code>). <b>PC: busy programs</b>: a program busy for 3 hours in a row (15 % of the processor or 1.5 GB of memory) is a warning. <b>PC: start-up programs</b>: those that start with Windows and are not needed (disable them in Task Manager › Startup apps, or "Got it"). Windows, its updates, the antivirus, the search index, the drivers, Tailscale, OneDrive and Claude are normal: never stopped, never reported as useless.</li>
+		<li><b>Error report (30 days)</b> in ? → Status: everything over a month, to give Claude. Full list with thresholds: <code>docs\ALERTS.md</code>.</li>
+	</ul>
+	<h3>Getting the alerts on your phone, outside the app</h3>
+	<p>The app itself cannot ring your phone when it is closed: the alerts go through the free <b>ntfy</b> app, subscribed to the PC's topic (in <code>state\ntfy-topic.txt</code>; keep it private).</p>
+	<ol>
+		<li>Install <b>ntfy</b> (Play Store, F-Droid or App Store).</li>
+		<li><b>+</b> → Subscribe to topic → type the topic exactly, server <code>ntfy.sh</code> (the default) → Subscribe.</li>
+		<li>Android: allow its notifications; Settings → Apps → ntfy → Battery → <b>Unrestricted</b> (otherwise Android puts it to sleep and nothing arrives); in ntfy's own settings, keep "Instant delivery" on. iPhone: allow notifications, including Time Sensitive.</li>
+		<li>Test: ? → Settings → Alerts → <b>Test</b> sends to your own alert topic; for the PC's topic, the next health warning, or ask Claude for a test.</li>
+	</ol>
+	<table>
+		<tr><th>Check</th><th>Usual fix</th></tr>
+		<tr><td>Vikunja server, App server, Public addresses</td><td>Restart the server</td></tr>
+		<tr><td>Windows task "…" missing or stopped, Sleep</td><td>Repair the services</td></tr>
+		<tr><td>Tailscale</td><td>Open Tailscale on the PC, connect (needs the PC)</td></tr>
+		<tr><td>Backups; Off-PC copy</td><td>Make a backup; wake the Mac with Tailscale on</td></tr>
+		<tr><td>Vikunja version (red if security)</td><td>Update Vikunja</td></tr>
+		<tr><td>API compatibility</td><td>Put Vikunja back (at the PC), ask Claude to adapt the app</td></tr>
+		<tr><td>Automations, per account</td><td>Restart the server; errors: Error report to Claude</td></tr>
+		<tr><td>Auto-update</td><td>Ask Claude (a failed app update has already been undone)</td></tr>
+		<tr><td>Device errors, App versions (one per account: "· Alex"), Server errors</td><td>Nothing if one-off; else Error report. An old version: reload the app on that device (theirs: tell them)</td></tr>
+		<tr><td>Disk space, Server log size, Power, Interruptions</td><td>Free space on C:; restart the server; plug in; <code>diagnose-power</code> if you don't know why</td></tr>
+		<tr><td>PC: busy programs, start-up programs</td><td>Close the program you don't need; Task Manager › Startup apps › Disable; restart the PC if the fan stays loud</td></tr>
+		<tr><td>Sign-ups open</td><td>Close sign-ups, restart (ask Claude)</td></tr>
+	</table>
+
+</section>
+
+<!-- ============================================================ 6 -->
+<section>
+	<h2><span class="n">6</span>Backups, copies and restoring</h2>
+	<table>
+		<tr><th>Copy</th><th>Holds</th><th>Lives</th><th>Protects against</th></tr>
+		<tr><td>Nightly backup</td><td>Database, all accounts</td><td>PC <code>backups\</code>, 30 days</td><td>A mistake, damaged data</td></tr>
+		<tr><td>Daily Mac copy</td><td>Database, all accounts</td><td>Mac Downloads</td><td>The PC dying (≤ 1 day lost)</td></tr>
+		<tr><td>Weekly Mac copy</td><td>The whole server</td><td>Mac Downloads</td><td>Rebuilding on a new PC</td></tr>
+		<tr><td>"Download my data"</td><td>One account (CSV or full JSON)</td><td>The user's device</td><td>Each user's own copy (monthly reminder)</td></tr>
+		<tr><td>Each device</td><td>Its account, offline copy</td><td>The device</td><td>Recent changes during an outage</td></tr>
+	</table>
+	<p>On the Mac, move the copies out of Downloads from time to time and keep the last few: they contain everyone's tasks and the server secret.</p>
+	<h3>Restoring</h3>
+	<ol class="steps">
+		<li>At the PC: <code>scripts\restore-backup.bat</code>, choose the date. The current database is kept first, so it can be undone.</li>
+		<li>Everything restarts. Devices then sync; changes they had not sent yet are sent on top.</li>
+	</ol>
+	<p class="small">Restoring affects <b>every account</b> on the server. For one lost task or project, look first in the Bin (30 days), or ask Claude to recover it from a backup without restoring everything.</p>
+</section>
+
+<!-- ============================================================ 7 -->
+<section>
+	<h2><span class="n">7</span>Updates and undo</h2>
+	<table>
+		<tr><th>What</th><th>How</th><th>Undo</th></tr>
+		<tr><td>The app</td><td>Ask Claude; installed by itself; devices follow</td><td>"Put the previous app back" (<code>rollback-app</code>)</td></tr>
+		<tr><td>Vikunja</td><td>"Update Vikunja" when Status shows a new version</td><td><code>rollback-vikunja</code>, at the PC</td></tr>
+		<tr><td>Server tools, health check, automations</td><td>Claude puts them in place; restart if needed</td><td>Ask Claude</td></tr>
+		<tr><td>Windows</td><td>Windows Update, left on; restarts are fine</td><td>—</td></tr>
+		<tr><td>Tailscale</td><td>Updates itself</td><td>—</td></tr>
+		<tr><td>Python</td><td>Rarely; after installing a newer one, repair the services</td><td>—</td></tr>
+	</table>
+	<p>Every change is listed in <code>docs\CHANGELOG.md</code>, and the two guides are updated with it (section 14).</p>
+	<h3>Other undo</h3>
+	<table>
+		<tr><th>You did</th><th>Undo with</th></tr>
+		<tr><td><code>restore-backup</code></td><td><code>restore-backup</code> again with <code>vikunja\db\vikunja.db.before-restore-&lt;date&gt;</code></td></tr>
+		<tr><td>Clean-ups (PC or Mac)</td><td>Everything is in <code>_to_delete\&lt;date&gt;\</code>: move it back</td></tr>
+		<tr><td>Mac folder mirror stopped</td><td>The last line printed by <code>mac/4-stop-project-folders.command</code></td></tr>
+	</table>
+</section>
+
+<!-- ============================================================ 8 -->
+<section>
+	<h2><span class="n">8</span>Other users</h2>
+	<p class="lead">Each person gets a private account on your server, with the same app. They never see your tasks; you never see theirs in the app.</p>
+	<h3>Adding someone</h3>
+	<ol class="steps">
+		<li>From the Mac: ask Claude "create a user: &lt;name&gt;, &lt;e-mail&gt;". The PC creates the account with a random temporary password and sends it to your Mac's Downloads as <code>YYMMDD_Tasks-account-&lt;username&gt;.txt</code>, with what to tell them (Claude never sees the password). Or at the PC: <code>scripts\create-user.bat</code>. Sign-ups stay closed to everyone else.</li>
+		<li>Pass on the temporary password by a private channel, then delete the text file. Give them the <b>User guide</b> (<code>docs\Tasks-user-guide.pdf</code>), the address, their username and temporary password.</li>
+		<li>They install the app: Help (?) → <b>Install the app</b> installs it or shows the steps for their browser (guide, section 1). Then they change their password in Vikunja and should turn on two-factor.</li>
+	</ol>
+	<h3>What they get automatically</h3>
+	<ul>
+		<li>An Inbox project; the GTD <b>automations on by default</b> (the app creates a key limited to what they need; they can turn it off in ? → Settings → Automations, and that choice is kept).</li>
+		<li>Their own health line per account; "Download my data" with a monthly reminder.</li>
+		<li>Labels the automations need are created in their account if missing. <code>p1</code>, <code>waiting-for</code>, Pro/Perso, "Single tasks" projects: they create them if they want.</li>
+	</ul>
+	<div class="box warn">
+		<h4>Be honest with them</h4>
+		<ul>
+			<li>Your PC is their server: when it is off, they work offline.</li>
+			<li>You can technically read their data (database, backups, Mac copies). Keep it to people you know.</li>
+			<li>Sign-in attempts are limited for everyone together (10 a minute): fine for a handful of people.</li>
+		</ul>
+	</div>
+	<h3>Removing someone</h3>
+	<p>They can delete their own account in Vikunja (Settings). Otherwise ask Claude for the command for your server. Their data, automation key and automation memory go with it.</p>
+	<h3>Other ways to share</h3>
+	<p><b>Their own server</b>: <code>make-starter-kit</code> gives a zip with none of your data; they run <code>setup-new-pc</code> on their own PC. <b>A shared project</b>: in Vikunja's pages, the project → Share (read-only or read-write). Details: <code>docs\SHARING.md</code>.</p>
+</section>
+
+<!-- ============================================================ 9 -->
+<section>
+	<h2><span class="n">9</span>The automations</h2>
+	<p class="lead">One process per account (<code>automations\run_poller.py</code> supervises them), every minute, through the local address. Same rules for everyone.</p>
+	<table>
+		<tr><th>Automation</th><th>What it does</th></tr>
+		<tr><td>Next-action chain</td><td>When a task is completed, a task that "follows" it gets <code>next-action</code> once all its predecessors are done</td></tr>
+		<tr><td>Clean-up</td><td>A completed task loses <code>next-action</code>, <code>today</code>, <code>overdue</code>, <code>last-day</code></td></tr>
+		<tr><td>Start date</td><td>A task created without a start date gets one</td></tr>
+		<tr><td>Overdue / last-day</td><td>Labels follow the due date</td></tr>
+		<tr><td>Pending projects</td><td>Their tasks stay hidden until their start date; then the project comes back</td></tr>
+		<tr><td>Duplicate labels</td><td>Merged, once a day</td></tr>
+	</table>
+	<p class="small">The labels the app and the automations act on (<code>src/lib/utils/systemLabels.ts</code>; shown first in the menu, on a line of their own since 14 Nov 2026): <code>today</code>, <code>week</code>, <code>next-action</code>, <code>p1</code>, <code>overdue</code>, <code>last-day</code>, <code>waiting-for</code>, <code>shopping</code>. The PC creates <code>next-action</code>, <code>today</code>, <code>overdue</code>, <code>last-day</code> if missing (<code>webhook_listener.py</code>, <code>AUTOMATION_LABELS</code>); the app creates <code>week</code> and <code>today</code> when first used. Matched by name, case ignored.</p>
+	<table>
+		<tr><th>Account</th><th>Key</th><th>Memory</th></tr>
+		<tr><td>Yours (main)</td><td><code>state\automation-token.txt</code></td><td><code>state\automations\</code></td></tr>
+		<tr><td>Each other user</td><td><code>state\automations\users\&lt;username&gt;\api_token.txt</code> (created by the app)</td><td>Same folder; <code>declined.txt</code> if they turned it off</td></tr>
+	</table>
+	<p><b>Built into the app</b>, nothing to run: Inbox until validated, Bin (30 days), Today / Red / Available (with "Single tasks" projects counted as Available), filter box, Tomorrow and Weekly reviews (the Weekly review starts with "Tidy your computer": Desktop and Downloads, ticked per week, kept in each account's settings), alerts after 15 min without sync, "Download my data".</p>
+	<p class="small">Logs: <code>logs\automations.log</code>, errors <code>state\automations\errors.log</code>. Details: <code>docs\AUTOMATIONS.md</code>.</p>
+</section>
+
+<!-- ============================================================ 10 -->
+<section>
+	<h2><span class="n">10</span>Scripts reference</h2>
+	<p class="lead"><code>Documents\todo-server\scripts\&lt;name&gt;.bat</code>. ✓ = Claude can request it from the Mac.</p>
+	<table class="scripts">
+		<tr><th>Script</th><th>From Mac</th><th>Use it when</th></tr>
+		<tr><td>restart-server</td><td>✓</td><td>Something does not work: <b>try this first</b></td></tr>
+		<tr><td>health-check-now</td><td>✓</td><td>You want to know if all is well</td></tr>
+		<tr><td>backup-now</td><td>✓</td><td>Before something risky</td></tr>
+		<tr><td>repair-services</td><td>✓</td><td>A scheduled task is missing; after a big Windows update; new PC</td></tr>
+		<tr><td>update-vikunja</td><td>✓</td><td>Status shows a new Vikunja version</td></tr>
+		<tr><td>rollback-app</td><td>✓</td><td>The new app version has a problem</td></tr>
+		<tr><td>deploy-app</td><td>auto</td><td>A new <code>app-next.zip</code> (automatic)</td></tr>
+		<tr><td>rollback-vikunja</td><td>PC</td><td>Something is wrong after a Vikunja update</td></tr>
+		<tr><td>restore-backup</td><td>PC</td><td>Data lost or damaged</td></tr>
+		<tr><td>task-ops</td><td>✓</td><td>Claude completes or files your own tasks (asked from the Mac)</td></tr>
+		<tr><td>create-user</td><td>✓</td><td>Giving someone an account (password sent to the Mac only)</td></tr>
+		<tr><td>weekly-safeguard</td><td>PC</td><td>A full copy to the Mac now</td></tr>
+		<tr><td>export-for-new-pc</td><td>PC</td><td>Moving to a new PC</td></tr>
+		<tr><td>setup-new-pc</td><td>PC</td><td>On the new PC</td></tr>
+		<tr><td>diagnose-power</td><td>PC</td><td>The PC slept or restarted and you don't know why</td></tr>
+		<tr><td>install-auto-update / uninstall-</td><td>PC</td><td>Allow / stop updates from the Mac</td></tr>
+		<tr><td>install-automations, start-, stop-</td><td>PC</td><td>Install or switch the automations</td></tr>
+		<tr><td>install-alerts</td><td>PC</td><td>Windows notifications for phone alerts</td></tr>
+		<tr><td>install-weekly-safeguard</td><td>PC</td><td>Set up the Mac copies (again after a new PC or Mac)</td></tr>
+		<tr><td>install-windows-quick-capture</td><td>PC</td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> on the PC</td></tr>
+		<tr><td>cleanup-pc, -apply, -empty</td><td>PC</td><td>Tidy leftovers (moves, never deletes, until you empty)</td></tr>
+		<tr><td>make-starter-kit</td><td>PC</td><td>Someone wants their own server</td></tr>
+	</table>
+	<p class="small">Every run writes a log in <code>logs\</code>. Mac scripts are in <code>mac\</code> (quick capture <kbd>⌥</kbd><kbd>⇧</kbd><kbd>⌘</kbd><kbd>T</kbd>, reports, clean-up).</p>
+</section>
+
+<!-- ============================================================ 11 -->
+<section>
+	<h2><span class="n">11</span>Moving to a new PC</h2>
+	<p class="lead">Give the new PC the same Tailscale name, <b>pc-lou</b>: then no device needs anything.</p>
+	<ol class="steps">
+		<li>Old PC working: <code>export-for-new-pc</code>. Old PC dead: take the newest <code>tasks-server-&lt;date&gt;.zip</code> from the Mac (and the newest <code>tasks-data-&lt;date&gt;.db</code> if it is more recent).</li>
+		<li>Unpack into <code>Documents</code> on the new PC. If the <code>.db</code> is newer, put it in <code>todo-server\vikunja\db\</code> as <code>vikunja.db</code>.</li>
+		<li><code>scripts\setup-new-pc.bat</code> (installs Python and Tailscale). In Tailscale: sign in, remove the old <code>pc-lou</code>, rename the new machine <code>pc-lou</code>.</li>
+		<li>It runs <code>repair-services</code>, starts everything and checks. Then <code>install-automations</code> + <code>start-automations</code> (never on two PCs at once), <code>install-weekly-safeguard</code>, <code>install-auto-update</code>, <code>install-alerts</code>.</li>
+		<li>Section 3 checklist; Claude app installed and linked.</li>
+	</ol>
+	<p class="small">Details, and what to change if the name cannot be <code>pc-lou</code>: <code>docs\MOVE-TO-NEW-PC.md</code>.</p>
+</section>
+
+<!-- ============================================================ 12 -->
+<section>
+	<h2><span class="n">12</span>Troubleshooting</h2>
+	<p class="lead">First: restart the server (from the Mac: ask Claude). On the device: close and reopen the app.</p>
+	<table>
+		<tr><th>Symptom</th><th>What to do</th></tr>
+		<tr><td>Devices "offline", changes waiting</td><td>The PC is off, asleep or without internet. Nothing is lost. Check the PC; if Claude cannot reach it either, someone must wake it.</td></tr>
+		<tr><td>Red bar "Server problem: …"</td><td>Tap it: Status says what to do.</td></tr>
+		<tr><td>A device stays on an old version</td><td>Reload the app there; if it stays, reinstall it (changes waiting are sent first).</td></tr>
+		<tr><td>Sent to the sign-in page</td><td>Sign in again; changes made meanwhile are kept and sent.</td></tr>
+		<tr><td>"Too many attempts"</td><td>Wait a minute (limit shared by everyone).</td></tr>
+		<tr><td>"500" on the PC's own browser</td><td>Use <code>http://127.0.0.1:5173</code> on the PC.</td></tr>
+		<tr><td>Automations do nothing for one user</td><td>Their ? → Settings → Automations: on? Status "Automations" per account.</td></tr>
+		<tr><td>Data looks wrong after an update</td><td>"Put the previous app back", then the Error report to Claude.</td></tr>
+		<tr><td>The PC slept or restarted</td><td><code>diagnose-power</code>, give the result to Claude.</td></tr>
+	</table>
+	<p>When asking Claude for help, the most useful things are: ? → Status → <b>Error report</b>, <code>state\health-report.html</code>, and the script's log in <code>logs\</code>. Claude can read them itself through the linked PC.</p>
+</section>
+
+<!-- ============================================================ 13 -->
+<section>
+	<h2><span class="n">13</span>Security</h2>
+	<ul>
+		<li><b>Public</b>: only the Vikunja sign-in/API and the app's files, through Tailscale Funnel, in HTTPS. Nothing else on the PC or the home network.</li>
+		<li><b>In place</b>: sign-ups closed, sign-in attempts limited, API only usable from the app (CORS), link sharing off, security headers, two-factor supported, Vikunja updates verified and tested, hourly security checks.</li>
+		<li><b>Your part</b>: two-factor on your account; a long unique password; Windows password and updates; disk encryption (BitLocker) if available; delete unused API tokens.</li>
+		<li><b>Keep private</b>: <code>vikunja\run-vikunja.cmd</code> (server secret), every <code>*token*.txt</code> in <code>state\</code>, <code>backups\</code>, the copies on the Mac, export zips, and the ntfy topic (anyone with it can read or fake alerts; texts are generic).</li>
+		<li>Anyone using the PC can read the database file: it holds every account.</li>
+		<li><b>Sessions</b> (19 Nov 2026): a device stays signed in for a year after its last use (<code>VIKUNJA_SERVICE_JWTTTLLONG=31536000</code> in <code>run-vikunja.cmd</code>; 30 days before). The access token itself still lasts 10 minutes and is renewed with a single-use cookie; the app tries a renewal twice before signing a device out. A lost device: change the password (it ends every session).</li>
+	</ul>
+	<p class="small">Details: <code>docs\SECURITY.md</code>.</p>
+</section>
+
+<!-- ============================================================ 14 -->
+<section>
+	<h2><span class="n">14</span>Keeping the guides up to date</h2>
+	<p>Rule, since 26 October 2026: <b>every change to the app or the server updates</b>:</p>
+	<ul>
+		<li>the <b>User guide</b> (<code>docs\Tasks-user-guide.pdf</code>), for anything a user sees;</li>
+		<li>this <b>Admin guide</b> (<code>docs\Tasks-admin-guide.pdf</code>), for anything about running the server;</li>
+		<li><code>docs\CHANGELOG.md</code>, and the detailed <code>docs\*.md</code> concerned;</li>
+		<li>the app's <b>Updates</b> (<code>src/lib/news.ts</code>), for anything a user notices, in plain words: each device shows the new entries once after the update ("What's new" box), and ? → Updates keeps and searches them all. <b>One feature, one place</b>: when a feature is reworked, its lines are taken out of the older updates and the newest one describes it in full, as it is now; several changes on the same day make one update.</li>
+	</ul>
+	<h3>Where a new feature goes (since 10 Nov 2026)</h3>
+	<p>One rule per area of the screen, so the app stays clear as it grows:</p>
+	<table>
+		<tr><th>Area</th><th>Holds</th><th>Not</th></tr>
+		<tr><td><b>Top bar</b></td><td>What works on every page: menu, Home, view, back/forward, search, sync dot, undo/redo, New task, ?</td><td>Anything for one page only</td></tr>
+		<tr><td><b>Menu (☰)</b></td><td>Every place to go: the pages (Inbox, Shopping, Upcoming, Tomorrow, Weekly review, Bin; Home is the house in the top bar), Projects, Filters, Labels. A new page gets a named row here. Exception (11 Nov 2026): on a label's page, a label in the menu adds itself to that page (<code>/label/12+15</code>, <code>?any=1</code> for “any of them”).</td><td>Settings, actions</td></tr>
+		<tr><td><b>A page</b></td><td>Its title, its own buttons at the top right (a project: + and ⋯, since 13 Nov 2026), its tasks</td><td>Global settings</td></tr>
+		<tr><td><b>Your account's settings</b></td><td>What follows a person from device to device and Vikunja has no place for, in <code>frontend_settings</code>: <code>tasks_sections</code>, <code>tasks_day_plans</code> (since 13 Nov 2026 a task chosen in the evening is written under the next day), <code>tasks_weekly_routine</code> (hand ticks <code>step-clean</code>, <code>step-review</code>), the alert topic, the status flag. Since 13 Nov 2026 every save goes through <code>src/lib/api/userSettings.ts</code> (one at a time, a fresh copy read just before writing, only its own key changed): two saves made at the same moment used to wipe each other (sections lost). The sections still to send are kept on the device (<code>tasks_sections_dirty</code>) and sent when the page is left. A device never writes a project's sections over a newer version it has not received. To put sections back from a backup: <code>state\sections-restore\&lt;username&gt;.json</code> (<code>{"id": "…", "projects": {"&lt;project id&gt;": record}}</code>), served by <code>serve_app.py</code> at <code>/sections-restore</code> to that user only; the app writes it into the account once per id, only for projects with no sections there</td><td>A second GET-then-POST of the settings elsewhere in the code</td></tr>
+		<tr><td><b>This device only</b></td><td><code>localStorage</code>: appearance (<code>appearance_v1</code>: Light, Black or Like the device, shades of grey; with Black the page links <code>manifest-black.webmanifest</code> and the black icons), folded sections, completed and pending tasks shown on a project page</td><td>Anything that must reach the other devices</td></tr>
+		<tr><td><b>? Help centre</b></td><td>About the app itself: Help, Updates, Status, Settings (tabs). <code>/settings?tab=…</code> opens it as a page.</td><td>Tasks, places</td></tr>
+	</table>
+	<p><b>You get them by yourself</b>: each new version arrives in the Mac's <b>Downloads</b> folder as <code>YYMMDD_Tasks-user-guide.pdf</code> / <code>YYMMDD_Tasks-admin-guide.pdf</code> (dated, so no older copy is ever replaced), and every version is kept on the PC in <code>docs\guides-archive\</code>. Nothing deletes them.</p>
+	<p>The sources are in the app's source (<code>app-source\guide\</code> and <code>app-source\admin-guide\</code>), and the version date is on each cover. If a guide looks out of date, tell Claude: it is a bug.</p>
+	<h3>Where to read more</h3>
+	<table>
+		<tr><th>Document</th><th>For</th></tr>
+		<tr><td><code>OPERATIONS.md</code></td><td>Every script, updates, notifications, logs</td></tr>
+		<tr><td><code>ALERTS.md</code></td><td>Every check and its thresholds</td></tr>
+		<tr><td><code>AUTOMATIONS.md</code></td><td>Automations in detail</td></tr>
+		<tr><td><code>SHARING.md</code></td><td>Other users and other servers</td></tr>
+		<tr><td><code>MOVE-TO-NEW-PC.md</code></td><td>A new PC</td></tr>
+		<tr><td><code>TROUBLESHOOTING.md</code></td><td>Symptoms and fixes</td></tr>
+		<tr><td><code>SECURITY.md</code>, <code>ARCHITECTURE.md</code></td><td>Protection; how it fits together</td></tr>
+		<tr><td><code>FEATURES.md</code>, <code>CHANGELOG.md</code></td><td>What the app does; what changed when</td></tr>
+	</table>
+</section>
+
+</body>
+</html>

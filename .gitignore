@@ -1,0 +1,17 @@
+node_modules/
+build/
+.svelte-kit/
+test-results/
+__pycache__/
+*.pyc
+# Never in the repository: data, keys and machine state
+server/vikunja/db/
+server/vikunja/*.exe
+server/vikunja/*.log
+server/state/
+server/backups/
+server/logs/
+server/requests/*.request
+server/requests/*.result.txt
+*.db
+.env
