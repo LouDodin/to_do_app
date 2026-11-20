@@ -167,17 +167,18 @@
 	const subProjects = $derived.by(() => {
 		const kids = new Map<number, typeof allProjects.value>();
 		for (const p of allProjects.value) {
-			// Only open sub-projects: not archived, not pending (13 Nov 2026).
-			if (!p.parent_project_id || p.is_archived || p.is_pending) continue;
+			// Only open sub-projects: not archived, not pending (13 Nov 2026); pending ones too when
+			// Pending is on (20 Nov 2026, Lou), marked as such.
+			if (!p.parent_project_id || p.is_archived || (p.is_pending && !showPending)) continue;
 			const list = kids.get(p.parent_project_id) ?? [];
 			list.push(p);
 			kids.set(p.parent_project_id, list);
 		}
-		const out: { id: number; title: string; depth: number; path: string }[] = [];
+		const out: { id: number; title: string; depth: number; path: string; pending: boolean }[] = [];
 		const walk = (id: number, depth: number, path: string) => {
 			for (const c of (kids.get(id) ?? []).sort((a, b) => (a.position ?? 0) - (b.position ?? 0) || a.title.localeCompare(b.title))) {
 				if (out.length > 200) return;
-				out.push({ id: c.id, title: c.title, depth, path: path ? `${path} / ${c.title}` : c.title });
+				out.push({ id: c.id, title: c.title, depth, path: path ? `${path} / ${c.title}` : c.title, pending: !!c.is_pending });
 				walk(c.id, depth + 1, path ? `${path} / ${c.title}` : c.title);
 			}
 		};
@@ -356,7 +357,7 @@
 					<option value="manual">My order</option>
 				</select>
 				<button class="tool" class:on={showDone} aria-pressed={showDone} onclick={() => { showDone = !showDone; writeFlag('project_show_done', showDone); }} title={showDone ? 'Hide completed' : 'Show completed'}>Completed</button>
-				<button class="tool" class:on={showPending} aria-pressed={showPending} onclick={() => { showPending = !showPending; writeFlag('project_show_pending', showPending); }} title={showPending ? 'Hide pending tasks' : 'Show pending tasks'}>Pending</button>
+				<button class="tool" class:on={showPending} aria-pressed={showPending} onclick={() => { showPending = !showPending; writeFlag('project_show_pending', showPending); }} title={showPending ? 'Hide pending tasks and sub-projects' : 'Show pending tasks and sub-projects'}>Pending</button>
 				<span class="sep"></span>
 				<button class="tool" class:on={project.value.is_pending} onclick={() => setProjectPending(projectId, !project.value!.is_pending)}>{project.value.is_pending ? 'Unmark pending' : 'Mark pending'}</button>
 				{#if project.value.is_archived}
@@ -375,7 +376,7 @@
 						{/each}
 						<hr />
 						<button aria-pressed={showDone} onclick={() => { showDone = !showDone; writeFlag('project_show_done', showDone); pageMenu = false; }}>{showDone ? 'Hide completed' : 'Show completed'}</button>
-						<button aria-pressed={showPending} onclick={() => { showPending = !showPending; writeFlag('project_show_pending', showPending); pageMenu = false; }}>{showPending ? 'Hide pending tasks' : 'Show pending tasks'}</button>
+						<button aria-pressed={showPending} onclick={() => { showPending = !showPending; writeFlag('project_show_pending', showPending); pageMenu = false; }}>{showPending ? 'Hide pending' : 'Show pending'}</button>
 						<hr />
 						<button onclick={() => { pageMenu = false; setProjectPending(projectId, !project.value!.is_pending); }}>{project.value.is_pending ? 'Unmark pending' : 'Mark pending'}</button>
 						{#if project.value.is_archived}
@@ -465,9 +466,9 @@
 				{#if showSubs}
 					{#each subProjects as sp (sp.id)}
 						{@const list = subTasksBy.get(sp.id) ?? []}
-						<section class="sub" style:margin-left="{Math.min(sp.depth, 4) * 16}px">
+						<section class="sub" class:paused={sp.pending} style:margin-left="{Math.min(sp.depth, 4) * 16}px">
 							<h2 class="sub-title">
-								<a href="/project/{sp.id}" title={sp.path}>{sp.title}</a>
+								<a href="/project/{sp.id}" title={sp.path}>{sp.title}</a>{#if sp.pending}<span class="pend-mark">pending</span>{/if}
 								
 							</h2>
 							<TaskList tasks={list.filter((t) => showPending || t.done || !isTaskPending(t))} showProject={false} columnHeads={false} completed={showDone ? 'show' : 'hide'} emptyLabel="No open tasks" />
@@ -482,6 +483,19 @@
 {/if}
 
 <style>
+	.sub.paused {
+		opacity: 0.6;
+	}
+	.pend-mark {
+		margin-left: 8px;
+		font-size: var(--fs-xs);
+		font-weight: 400;
+		color: var(--text-dim);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		padding: 0 4px;
+		vertical-align: middle;
+	}
 	.subs {
 		margin-top: 20px;
 		border-top: 1px solid var(--border);

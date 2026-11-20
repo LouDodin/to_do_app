@@ -12,7 +12,7 @@ export type NewsEntry = { id: string; date: string; title: string; items: string
 
 export const NEWS: NewsEntry[] = [
 	{
-		id: '2026-11-20',
+		id: '2026-11-20b',
 		date: '20 Nov 2026',
 		title: 'Ongoing tasks, a fuller New task, Today ⇄ This week',
 		items: [
@@ -20,7 +20,8 @@ export const NEWS: NewsEntry[] = [
 			'The + button opens the full New task window: type and press Enter for the Inbox, or fill in the rest (project, dates, reminder, repeat, labels, notes). With a project, the task skips the Inbox. The cart is still there.',
 			'On a computer, drag a task from Today to This week on the home page, or back: its label follows.',
 			'today and week together no more: giving one takes off the other. A task due today or earlier gets today by itself; one due later this week gets week.',
-			'On the phone, giving a project to an Inbox task (long press › Project) keeps it in the Inbox until you validate it.'
+			'On the phone, giving a project to an Inbox task (long press › Project) keeps it in the Inbox until you validate it.',
+			'On a project’s page, Pending also shows its sub-projects on hold, with their tasks.'
 		]
 	},
 	{

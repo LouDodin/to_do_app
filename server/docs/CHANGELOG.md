@@ -353,6 +353,13 @@ The health check's "Off-PC copy" line now raises only one warning: **no copy has
 
 Since Vikunja 2.7.1, each release also contains another program for Windows ("veans", a command-line tool). `update-vikunja` downloaded that one instead of Vikunja, so its test failed (nothing was changed: you stayed on 2.7.0). It now takes only the `vikunja-…-windows-4.0-amd64` build.
 
+## 20 Nov 2026 (later): pending sub-projects on a project page
+
+| What | Detail |
+|---|---|
+| Project page, **Pending** | Showed only pending tasks: a sub-project on hold stayed hidden. Now Pending also lists the pending sub-projects (and those under them) with their tasks, greyed and marked *pending*. Off, they are hidden as before. Test `e2e/nov20b.mjs` (4); `project-page`, `nov10` pass. |
+| Check for other bugs | No device errors (24 h), no automation or server errors. Only note: in the other account, a label name exists twice (🔥🔥🔥Energy); harmless, left as it is. |
+
 ## 20 Nov 2026 (afternoon): the new ideas from your develop_to_do_app list
 
 | Task | What changed |

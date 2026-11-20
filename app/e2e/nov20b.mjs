@@ -1,0 +1,30 @@
+// 20 Nov 2026: on a project page, Pending also shows the pending sub-projects (with their tasks),
+// marked "pending"; off, they are hidden. TEST Vikunja only. Usage: node e2e/nov20b.mjs <app> <api> <user> <pass>
+import { chromium } from 'playwright-core';
+const [base, api, user, pass] = process.argv.slice(2);
+const jwt = (await (await fetch(api + '/api/v1/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: user, password: pass }) })).json()).token;
+const H = { Authorization: 'Bearer ' + jwt, 'Content-Type': 'application/json' };
+const req = async (m, p, b) => (await fetch(api + p, { method: m, headers: H, body: b ? JSON.stringify(b) : undefined })).json().catch(() => null);
+let ok = 0, n = 0;
+const check = (name, cond, got = '') => { n++; if (cond) ok++; console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '  → ' + String(got).slice(0, 300)}`); };
+const st = Date.now().toString(36).slice(-4);
+const A = await req('PUT', '/api/v1/projects', { title: `Parent ${st}` });
+const open = await req('PUT', '/api/v1/projects', { title: `Open sub ${st}`, parent_project_id: A.id });
+const held = await req('PUT', '/api/v1/projects', { title: `Held sub ${st}`, parent_project_id: A.id, description: '[pending]\n' });
+await req('PUT', `/api/v1/projects/${held.id}/tasks`, { title: `task in held ${st}` });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+await ctx.addInitScript(([x, j]) => { if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', '1'); localStorage.setItem('vikunja_api_url', x); localStorage.setItem('vikunja_jwt', j); localStorage.setItem('news_seen', '2099'); localStorage.removeItem('project_show_pending'); }, [api, jwt]);
+const p = await ctx.newPage();
+await p.goto(base + `/project/${A.id}`); await p.waitForTimeout(5000);
+const subs = () => p.locator('.sub-title').allInnerTexts();
+check('Pending off: the open sub-project only', (await subs()).some((t) => t.includes(`Open sub ${st}`)) && !(await subs()).some((t) => t.includes(`Held sub ${st}`)), await subs());
+await p.locator('.tools').getByRole('button', { name: 'Pending', exact: true }).click(); await p.waitForTimeout(600);
+check('Pending on: the pending sub-project too, marked pending', (await subs()).some((t) => t.includes(`Held sub ${st}`) && t.includes('pending')), await subs());
+check('…with its tasks', (await p.getByText(`task in held ${st}`).count()) === 1);
+await p.locator('.tools').getByRole('button', { name: 'Pending', exact: true }).click(); await p.waitForTimeout(600);
+check('Pending off again: hidden', !(await subs()).some((t) => t.includes(`Held sub ${st}`)), await subs());
+await browser.close();
+for (const x of [held, open, A]) await req('DELETE', `/api/v1/projects/${x.id}`);
+console.log(`${ok}/${n} passed`);
+process.exit(ok === n ? 0 : 1);
