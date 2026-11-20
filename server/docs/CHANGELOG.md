@@ -353,6 +353,15 @@ The health check's "Off-PC copy" line now raises only one warning: **no copy has
 
 Since Vikunja 2.7.1, each release also contains another program for Windows ("veans", a command-line tool). `update-vikunja` downloaded that one instead of Vikunja, so its test failed (nothing was changed: you stayed on 2.7.0). It now takes only the `vikunja-…-windows-4.0-amd64` build.
 
+## 20 Nov 2026: the code on GitHub (#552)
+
+| What | Detail |
+|---|---|
+| Repository | https://github.com/LouDodin/to_do_app (private), branch `main` |
+| `app/` | The app's source, tests, user guide and admin guide |
+| `server/` | This folder's scripts, automations, tools, Vikunja launcher, Mac helpers and docs |
+| Left out | Database, backups, logs, `state/` (keys), requests, Vikunja programs. In `run-vikunja.cmd` the server secret reads `REPLACE_WITH_YOUR_SECRET`; the real one stays on the PC only. A `.gitignore` keeps these out of later commits. |
+
 ## 19 Nov 2026 (evening): the rest of your develop_to_do_app list
 
 | Task | What changed |
