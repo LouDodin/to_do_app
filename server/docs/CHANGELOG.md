@@ -353,6 +353,17 @@ The health check's "Off-PC copy" line now raises only one warning: **no copy has
 
 Since Vikunja 2.7.1, each release also contains another program for Windows ("veans", a command-line tool). `update-vikunja` downloaded that one instead of Vikunja, so its test failed (nothing was changed: you stayed on 2.7.0). It now takes only the `vikunja-…-windows-4.0-amd64` build.
 
+## 20 Nov 2026 (afternoon): the new ideas from your develop_to_do_app list
+
+| Task | What changed |
+|---|---|
+| #575 today / week from due dates | Server (`automations/webhook_listener.py`, new step "today/week labels", every minute, each account): open task due today or earlier → **today**; due later this week (to Sunday) → **week**, unless already on today. Never both: today wins. It only adds; a label given by hand is never removed because of the date. The automation labels now include **week** (created if missing). App: giving today takes off week and the other way round, wherever the label is given. Tests: `automations/test_today_week.py` (8), `test_poller.py` updated. |
+| #578 New task window | The + button (and the N key) opens the full New task window instead of the one-line box: title + Enter → the Inbox, as before; optionally project (then validated, skips the Inbox), section, start, due, **Remind** (day and time), **Repeat** (week, month, year; tomorrow 9:00 as due date when none is given), labels, notes; the cart makes it a shopping item. The stand-alone /quick-add window is unchanged. |
+| #579 Phone: Inbox task left at once | Giving a project from the Inbox on a phone (long press › Project) validated the task (rule of #557), so it left the list at once. On a phone it now stays in the Inbox with its new project, to finish it, until validated with its tick. On a computer, unchanged. |
+| #581 Drag between Today and This week | Home page, computer: drag a task (or the ticked ones) onto the other block; it gets that block's label and loses the other. |
+| #582 Ongoing | A switch **Ongoing** on the task page (hidden label `ctx:ongoing`). Ongoing tasks: own block at the top of the home page (not repeated in the others), first group of To consider in Tomorrow and of Plan the coming week in the Weekly review, an *ongoing* mark in lists. Pending switches it off, and the other way round. |
+| Tests | New `e2e/nov20.mjs` (18 checks); regression suites and 159 unit tests pass. |
+
 ## 20 Nov 2026: the code on GitHub (#552)
 
 | What | Detail |

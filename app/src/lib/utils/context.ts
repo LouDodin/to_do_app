@@ -22,6 +22,9 @@ export const PENDING_LABEL = 'ctx:pending';
 // Abandoned (11 Nov 2026): closed without being done; it should not be done any more. The task is
 // marked done (it leaves every list) and carries this hidden label, so it is never counted as done.
 export const ABANDONED_LABEL = 'ctx:abandoned';
+// Ongoing (20 Nov 2026, Lou #582): started and still in progress. Hidden label; the task shows in
+// its own block at the top of the home page, and first among the tasks to consider in the reviews.
+export const ONGOING_LABEL = 'ctx:ongoing';
 
 const STATUS_KEY = 'tasks_status_v2';
 let statusV2 = (() => {
@@ -49,7 +52,7 @@ export function setValidatedMarkInUse(on: boolean): void {
 // the server by a one-time clean-up, hidden until then).
 export function isContextLabel(l: { title: string }): boolean {
 	const t = l.title.toLowerCase();
-	return t === 'ctx:pro' || t === 'ctx:perso' || t === REVIEW_LABEL || t === VALIDATED_LABEL || t === PENDING_LABEL || t === ABANDONED_LABEL;
+	return t === 'ctx:pro' || t === 'ctx:perso' || t === REVIEW_LABEL || t === VALIDATED_LABEL || t === PENDING_LABEL || t === ABANDONED_LABEL || t === ONGOING_LABEL;
 }
 
 const hasLabel = (task: { labels?: { title: string }[] }, name: string) =>
@@ -70,6 +73,11 @@ export function isAbandoned(task: { labels?: { title: string }[] }): boolean {
 /** On hold (see PENDING_LABEL). */
 export function isTaskPending(task: { labels?: { title: string }[] }): boolean {
 	return hasLabel(task, PENDING_LABEL);
+}
+
+/** In progress (see ONGOING_LABEL). */
+export function isOngoing(task: { labels?: { title: string }[] }): boolean {
+	return hasLabel(task, ONGOING_LABEL);
 }
 
 /** Still to validate (the opposite of isValidated). */

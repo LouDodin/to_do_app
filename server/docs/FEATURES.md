@@ -206,3 +206,7 @@ At the top of the home page, in All, Perso and Pro. Empty, it is just one search
 - **Selection bar, Abandon**: closes every ticked task as abandoned (to the Bin, undo with Ctrl/⌘+Z).
 - **Home, + per block**: a new task with the block's label (today, week, p1, next-action).
 - **Editing a title in a row**: the labels stay in view and clickable.
+- **today / week labels from due dates** (server, every minute): due today or earlier → today; due later this week → week. Never both.
+- **New task window from +**: Inbox by default; optional project, dates, reminder, repeat, labels, notes, cart (shopping).
+- **Home: drag between Today and This week** (computer) changes the label.
+- **Ongoing**: switch on the task page; own block on the home page; first in Tomorrow and the Weekly review.

@@ -85,7 +85,7 @@ table.scripts td:nth-child(2) { text-align: center; color: var(--green); font-we
 			<li>Your data is in one file on the PC, backed up every night and copied to the Mac every day.</li>
 		</ul>
 	</div>
-	<div class="meta" style="margin-top:auto"><span>Version of 10 November 2026</span><span>Server folder: Documents\todo-server on pc-lou</span></div>
+	<div class="meta" style="margin-top:auto"><span>Version of 20 November 2026</span><span>Server folder: Documents\todo-server on pc-lou</span></div>
 </div>
 
 <!-- ============================================================ CONTENTS -->
@@ -197,6 +197,7 @@ table.scripts td:nth-child(2) { text-align: center; color: var(--green); font-we
 		<tr><td>New User guide / Admin guide to the Mac</td><td>Within minutes of each update (when the Mac is awake)</td><td>Mac Downloads <code>YYMMDD_Tasks-user-guide.pdf</code>, <code>YYMMDD_Tasks-admin-guide.pdf</code>; every version also in <code>docs\guides-archive\</code></td></tr>
 		<tr><td>Health check (about 30 checks)</td><td>Every hour</td><td>? → Status; <code>state\health-report.html</code>; <code>logs\health.log</code></td></tr>
 		<tr><td>GTD automations, per account</td><td>Every minute</td><td>Status "Automations"; <code>logs\automations.log</code></td></tr>
+		<tr><td>today / week labels from due dates (since 20 Nov 2026), per account</td><td>Every minute (part of the automations, step "today/week labels")</td><td>Due today or earlier → <b>today</b>; due later this week (to Sunday) → <b>week</b>, unless on today. Never both: today wins. It only adds; a label given by hand is never removed because of the date. <code>logs\automations.log</code></td></tr>
 		<tr><td>Task reminders to the phones (since 19 Nov 2026), all accounts</td><td>Every minute (part of the automations, <code>automations\reminders.py</code>)</td><td>ntfy app ("Tasks: reminder", generic text, opens the task); <code>logs\automations.log</code>; sent ones in <code>state\reminders-sent.json</code>. Only accounts with an alert topic; a reminder over 12 h late is dropped</td></tr>
 		<tr><td>Auto-update (new app, requests)</td><td>Every minute, only when something waits</td><td>Status "Auto-update"</td></tr>
 		<tr><td>Power watch (battery)</td><td>Every minute (part of auto-update)</td><td>Urgent phone notification; Status "Power"; <code>state\auto-update-history.log</code></td></tr>

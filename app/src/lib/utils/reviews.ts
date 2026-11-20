@@ -2,7 +2,7 @@
 // of the tasks and projects, so it can be tested without a browser.
 import type { VikunjaProject, VikunjaTask } from '../types';
 import { hasDate } from './dates';
-import { inReview, isInboxProject, isTaskPending, isAbandoned } from './context';
+import { inReview, isInboxProject, isTaskPending, isAbandoned, isOngoing } from './context';
 import { isBinProject } from './bin';
 
 const DAY = 86_400_000;
@@ -68,6 +68,12 @@ export function plannedNotDone(tasks: VikunjaTask[], projects: VikunjaProject[],
 	return reviewable(tasks, projects)
 		.filter((t) => !t.done && ids.has(t.id) && !isTaskPending(t) && !inInboxView(t, byId))
 		.sort((a, b) => (time(a.due_date) || Infinity) - (time(b.due_date) || Infinity));
+}
+
+/** Open tasks in progress (20 Nov 2026, Lou #582), sorted, not on hold. */
+export function ongoingTasks(tasks: VikunjaTask[], projects: VikunjaProject[]): VikunjaTask[] {
+	const byId = new Map(projects.map((p) => [p.id, p]));
+	return reviewable(tasks, projects).filter((t) => !t.done && isOngoing(t) && !isTaskPending(t) && !inInboxView(t, byId));
 }
 
 export interface WeeklyReview {

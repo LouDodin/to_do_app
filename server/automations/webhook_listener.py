@@ -29,13 +29,14 @@ VIKUNJA_URL = os.environ.get("VIKUNJA_URL", "https://pc-lou.tailc45f62.ts.net")
 #   VIKUNJA_TOKEN (environment), else VIKUNJA_TOKEN_FILE, else api_token.txt next to the state files.
 NEXT_ACTION_LABEL_ID = 4
 TODAY_LABEL_ID = 5
+WEEK_LABEL_ID = None  # found by name at start-up (resolve_automation_labels)
 OVERDUE_LABEL_ID = 112
 LAST_DAY_LABEL_ID = 113
 PROTECTED_LABEL_IDS = {NEXT_ACTION_LABEL_ID, TODAY_LABEL_ID, OVERDUE_LABEL_ID, LAST_DAY_LABEL_ID}
 # Since 26 Oct 2026 the automations run for every account that turns them on, each with its own
 # labels: the ids above are only the starting values (Lou's account); every poller looks its
 # account's four labels up by name (creating any that is missing) before working.
-AUTOMATION_LABELS = (("next-action", "5f5ff6"), ("today", "000000"), ("overdue", "ff473d"), ("last-day", "ffab40"))
+AUTOMATION_LABELS = (("next-action", "5f5ff6"), ("today", "000000"), ("overdue", "ff473d"), ("last-day", "ffab40"), ("week", "6b7280"))
 LABELS_RESOLVED = False
 P1_LABEL_COLOR = "ff473d"
 LAST_DAY_LABEL_COLOR = "ffab40"
@@ -310,7 +311,7 @@ def get_or_create_label(name, hex_color):
 def resolve_automation_labels():
     """Finds this account's next-action / today / overdue / last-day labels by name (the oldest
     one when a name is used twice), creates the missing ones, and points the automations at them."""
-    global NEXT_ACTION_LABEL_ID, TODAY_LABEL_ID, OVERDUE_LABEL_ID, LAST_DAY_LABEL_ID, PROTECTED_LABEL_IDS, LABELS_RESOLVED
+    global NEXT_ACTION_LABEL_ID, TODAY_LABEL_ID, OVERDUE_LABEL_ID, LAST_DAY_LABEL_ID, WEEK_LABEL_ID, PROTECTED_LABEL_IDS, LABELS_RESOLVED
     labels = get_all_labels()
     ids = {}
     for name, color in AUTOMATION_LABELS:
@@ -323,6 +324,7 @@ def resolve_automation_labels():
             ids[name] = created["id"]
     NEXT_ACTION_LABEL_ID, TODAY_LABEL_ID = ids["next-action"], ids["today"]
     OVERDUE_LABEL_ID, LAST_DAY_LABEL_ID = ids["overdue"], ids["last-day"]
+    WEEK_LABEL_ID = ids["week"]
     PROTECTED_LABEL_IDS = set(ids.values())
     LABELS_RESOLVED = True
     return ids
@@ -516,6 +518,50 @@ def sync_due_date_labels(pending_ids):
                 remove_label_from_task(task["id"], overdue_id)
             if has_last_day:
                 remove_label_from_task(task["id"], last_day_id)
+
+
+# ---- today / week from the due date (20 Nov 2026, Lou's to-do #575) ----
+
+def end_of_week(day):
+    """The Sunday that ends day's week (weeks start on Monday)."""
+    return day + timedelta(days=6 - day.weekday())
+
+
+def today_week_changes(task, today, today_id, week_id):
+    """(labels to add, labels to remove) for an open task: due today or earlier -> today; due later
+    this week -> week, unless it is already on today. Never both: today wins. Only adds from the
+    due date; a label chosen by hand is never taken off because of the date."""
+    label_ids = {l["id"] for l in (task.get("labels") or [])}
+    add, remove = set(), set()
+    due = task.get("due_date") or ""
+    if due and not is_zero_date(due) and due > "2000":
+        d = to_local_date(due)
+        if d <= today:
+            add.add(today_id)
+        elif d <= end_of_week(today) and today_id not in label_ids:
+            add.add(week_id)
+    has = label_ids | add
+    if today_id in has and week_id in has:
+        add.discard(week_id)
+        if week_id in label_ids:
+            remove.add(week_id)
+    return add - label_ids, remove
+
+
+def sync_today_week_labels(pending_ids):
+    if not TODAY_LABEL_ID or not WEEK_LABEL_ID:
+        return
+    today = date.today()
+    for task in paginated_tasks("done = false"):
+        if task.get("project_id") in pending_ids:
+            continue
+        add, remove = today_week_changes(task, today, TODAY_LABEL_ID, WEEK_LABEL_ID)
+        for lid in add:
+            add_label_to_task(task["id"], lid)
+            log(f"Task {task['id']}: {'today' if lid == TODAY_LABEL_ID else 'week'} (due date)")
+        for lid in remove:
+            remove_label_from_task(task["id"], lid)
+            log(f"Task {task['id']}: week removed (it is on today)")
 
 
 # ---- daily label maintenance: merge duplicates, delete unused ----
@@ -979,6 +1025,7 @@ def poll_once():
 
         run_step("start_date backfill", lambda: backfill_start_dates(since, pending_ids))
         run_step("due-date labels", lambda: sync_due_date_labels(pending_ids))
+        run_step("today/week labels", lambda: sync_today_week_labels(pending_ids))
         run_step("saved-filter sync", lambda: sync_saved_filters(pending_ids))
 
         if pending_root_id is not None:

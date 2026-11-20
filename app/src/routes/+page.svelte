@@ -16,17 +16,47 @@
 	import { goto } from '$app/navigation';
 	import NewTaskDialog from '../lib/components/NewTaskDialog.svelte';
 	import Icon from '../lib/components/Icon.svelte';
+	import { addTaskLabel } from '../lib/actions/tasks';
+	import { ensureLabel } from '../lib/actions/labels';
+	import { clearMulti } from '../lib/stores/multiSelect.svelte';
 
 	// + next to each block (19 Nov 2026, Lou #566): a new task with that block's label.
 	const BLOCK_LABEL: Record<string, string> = { Today: 'today', 'This week': 'week', Red: 'p1', Available: 'next-action' };
 	let adding = $state<string | null>(null);
+
+	// Drag a task between Today and This week (20 Nov 2026, Lou #581): it gets that block's label
+	// and loses the other one (actions/tasks.ts: never both).
+	let dropOn = $state<string | null>(null);
+	const isTaskDrag = (e: DragEvent) => !!e.dataTransfer?.types.includes('application/x-task-id');
+	function over(e: DragEvent, block: string) {
+		if (!isTaskDrag(e)) return;
+		e.preventDefault();
+		dropOn = block;
+	}
+	async function drop(e: DragEvent, block: string) {
+		dropOn = null;
+		if (!isTaskDrag(e)) return;
+		e.preventDefault();
+		let ids: number[] = [];
+		try {
+			ids = JSON.parse(e.dataTransfer?.getData('application/x-task-ids') || '[]');
+		} catch {
+			ids = [];
+		}
+		if (!ids.length) ids = [Number(e.dataTransfer?.getData('application/x-task-id'))].filter((n) => n);
+		const label = await ensureLabel(BLOCK_LABEL[block], block === 'Today' ? '000000' : '1e88e5');
+		const inBlock = new Set((block === 'Today' ? blocks.value.today : blocks.value.week).map((t) => t.id));
+		const moved = ids.filter((id) => !inBlock.has(id));
+		for (const id of moved) await addTaskLabel(id, label);
+		if (moved.length) clearMulti();
+	}
 
 	const blocks = liveState(
 		() => {
 			const view = areaFilter.area;
 			return getHomeBlocks(view).then((b) => ({ ...b, view: view as string }));
 		},
-		{ today: [], week: [], red: [], available: [], all: [], pool: [], unsorted: [], view: '' as string }
+		{ ongoing: [], today: [], week: [], red: [], available: [], all: [], pool: [], unsorted: [], view: '' as string }
 	);
 	const projects = liveState(() => db.projects.toArray(), []);
 	// Searched in the whole view (All, Perso or Pro), Today, Red and Available included.
@@ -59,12 +89,18 @@
 				<TaskList tasks={filtered} emptyLabel="No task matches" simple completed="hide" />
 			</section>
 		{:else}
-			<section>
+			{#if blocks.value.ongoing.length}
+				<section>
+					<div class="block-head"><h2 class="section-title">Ongoing</h2></div>
+					<TaskList tasks={blocks.value.ongoing} emptyLabel="" simple completed="hide" />
+				</section>
+			{/if}
+			<section class="drop" class:over={dropOn === 'Today'} data-block="today" role="group" aria-label="Today" ondragover={(e) => over(e, 'Today')} ondragleave={(e) => !(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node) && (dropOn = null)} ondrop={(e) => drop(e, 'Today')}>
 				<div class="block-head"><h2 class="section-title">Today</h2><button class="plus" onclick={() => (adding = 'Today')} aria-label="New task in Today" title="New task here"><Icon name="plus" size={14} /></button></div>
 				<TaskList tasks={blocks.value.today} emptyLabel="Nothing for today" simple completed="hide" />
 			</section>
 
-			<section>
+			<section class="drop" class:over={dropOn === 'This week'} data-block="week" role="group" aria-label="This week" ondragover={(e) => over(e, 'This week')} ondragleave={(e) => !(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node) && (dropOn = null)} ondrop={(e) => drop(e, 'This week')}>
 				<div class="block-head"><h2 class="section-title">This week</h2><button class="plus" onclick={() => (adding = 'This week')} aria-label="New task in This week" title="New task here"><Icon name="plus" size={14} /></button></div>
 				<TaskList tasks={blocks.value.week} emptyLabel="Nothing planned for the week" simple completed="hide" />
 			</section>
@@ -134,5 +170,14 @@
 	}
 	section {
 		margin-top: 18px;
+	}
+	section.drop {
+		border-radius: var(--radius);
+		outline: 2px dashed transparent;
+		outline-offset: 4px;
+		transition: outline-color 0.1s;
+	}
+	section.drop.over {
+		outline-color: var(--accent);
 	}
 </style>

@@ -1,7 +1,8 @@
+import { viewport } from '../stores/viewport.svelte';
 import { remappedId } from '../db/idRemap';
 import { capitalizeFirst } from '../utils/text';
 import { recorded, rememberCreated } from '../stores/history.svelte';
-import { inReview, isInboxProject, REVIEW_LABEL, VALIDATED_LABEL, validatedMarkInUse, dueLabelLock, PENDING_LABEL, ABANDONED_LABEL, isAbandoned } from '../utils/context';
+import { inReview, isInboxProject, REVIEW_LABEL, VALIDATED_LABEL, validatedMarkInUse, dueLabelLock, PENDING_LABEL, ABANDONED_LABEL, ONGOING_LABEL, isAbandoned } from '../utils/context';
 import { rememberMovedOut, forgetMovedOut } from '../stores/inboxGuard';
 import { releaseFromInbox, backToInbox } from '../stores/inboxSticky';
 import { db } from '../db/schema';
@@ -31,6 +32,7 @@ async function createTaskNow(input: {
 	priority?: number;
 	repeat_after?: number;
 	repeat_mode?: number;
+	reminders?: { reminder: string }[];
 	// Local only: straight into a section of the project page, at a place in your own order.
 	section_id?: number | null;
 	local_order?: number;
@@ -52,6 +54,7 @@ async function createTaskNow(input: {
 		priority: input.priority,
 		repeat_after: input.repeat_after,
 		repeat_mode: input.repeat_mode,
+		reminders: input.reminders,
 		created: now,
 		updated: now,
 		section_id: input.section_id ?? null,
@@ -70,7 +73,8 @@ async function createTaskNow(input: {
 			start_date: input.start_date ?? now,
 			priority: input.priority,
 			repeat_after: input.repeat_after,
-			repeat_mode: input.repeat_mode
+			repeat_mode: input.repeat_mode,
+			...(input.reminders ? { reminders: input.reminders } : {})
 		}
 	});
 	if (input.label_ids?.length) {
@@ -144,7 +148,9 @@ async function moveTaskToProjectNow(id: number, projectId: number): Promise<void
 		const validated = (task.labels ?? []).some((l) => l.title.toLowerCase() === VALIDATED_LABEL);
 		// 19 Nov 2026 (Lou): moving a task from the Inbox page into a project (drag onto a project
 		// in the menu, its project on the row, the selection's Move) also validates it.
-		const fromInboxPage = typeof location !== 'undefined' && location.pathname === '/inbox';
+		// Not on a phone (20 Nov 2026, Lou #579): there the task stays in the Inbox with its new
+		// project, to finish it (labels, dates), and leaves once validated with its tick.
+		const fromInboxPage = typeof location !== 'undefined' && location.pathname === '/inbox' && !viewport.phone;
 		if (isInboxProject(projectId, projects)) {
 			// Back in the Inbox: to validate again.
 			await unvalidateTask(id);
@@ -167,6 +173,16 @@ async function renameTaskNow(id: number, title: string): Promise<void> {
 	await updateTask(id, { title: capitalizeFirst(title) });
 }
 
+// today and week never together (20 Nov 2026, Lou #575): the one just given replaces the other;
+// when both were already there, today stays.
+async function todayOrWeek(current: number[], next: number[]): Promise<number[]> {
+	const byTitle = new Map((await db.labels.bulkGet(next)).filter((l) => !!l).map((l) => [l!.title.trim().toLowerCase(), l!.id]));
+	const t = byTitle.get('today'), w = byTitle.get('week');
+	if (t === undefined || w === undefined) return next;
+	const drop = !current.includes(w) ? t : w;
+	return next.filter((x) => x !== drop);
+}
+
 async function setTaskLabelsNow(id: number, labelIds: number[]): Promise<void> {
 	id = liveId(id);
 	// Only the difference with what this device shows is sent, one label at a time (addLabel /
@@ -174,6 +190,7 @@ async function setTaskLabelsNow(id: number, labelIds: number[]): Promise<void> {
 	// can no longer erase labels set elsewhere (such as the "validated" mark).
 	const task = await db.tasks.get(id);
 	const current = (task?.labels ?? []).map((l) => l.id);
+	labelIds = await todayOrWeek(current, labelIds);
 	const added = labelIds.filter((l) => !current.includes(l));
 	const removed = current.filter((l) => !labelIds.includes(l));
 	if (!added.length && !removed.length) return;
@@ -323,8 +340,19 @@ export async function ensureHiddenLabel(title: string, hex: string): Promise<num
 async function setTaskPendingNow(id: number, on: boolean): Promise<void> {
 	const task = await db.tasks.get(id);
 	if (!task) return;
-	const keep = (task.labels ?? []).filter((l) => l.title.toLowerCase() !== PENDING_LABEL).map((l) => l.id);
+	// On hold is not in progress any more (20 Nov 2026).
+	const keep = (task.labels ?? []).filter((l) => l.title.toLowerCase() !== PENDING_LABEL && !(on && l.title.toLowerCase() === ONGOING_LABEL)).map((l) => l.id);
 	await setTaskLabelsNow(id, on ? [...keep, await ensureHiddenLabel(PENDING_LABEL, '9e9e9e')] : keep);
+}
+
+// Ongoing, or not (20 Nov 2026, Lou #582): a hidden label, see utils/context.ts. An ongoing task
+// is not on hold.
+async function setTaskOngoingNow(id: number, on: boolean): Promise<void> {
+	id = liveId(id);
+	const task = await db.tasks.get(id);
+	if (!task) return;
+	const keep = (task.labels ?? []).filter((l) => l.title.toLowerCase() !== ONGOING_LABEL && !(on && l.title.toLowerCase() === PENDING_LABEL)).map((l) => l.id);
+	await setTaskLabelsNow(id, on ? [...keep, await ensureHiddenLabel(ONGOING_LABEL, '26a69a')] : keep);
 }
 
 // Abandon a task (11 Nov 2026): closed without being done. Marked done, so it leaves every list,
@@ -359,5 +387,6 @@ export const moveTaskToSection: typeof moveTaskToSectionNow = (...a: Parameters<
 export const validateTask: typeof validateTaskNow = (...a: Parameters<typeof validateTaskNow>) => recorded('Validate', [a[0]], () => validateTaskNow(...a));
 export const unvalidateTask: typeof unvalidateTaskNow = (...a: Parameters<typeof unvalidateTaskNow>) => recorded('Back to the Inbox', [a[0]], () => unvalidateTaskNow(...a));
 export const setTaskPending: typeof setTaskPendingNow = (...a: Parameters<typeof setTaskPendingNow>) => recorded(a[1] ? 'Mark pending' : 'Resume', [a[0]], () => setTaskPendingNow(...a));
+export const setTaskOngoing: typeof setTaskOngoingNow = (...a: Parameters<typeof setTaskOngoingNow>) => recorded(a[1] ? 'Mark ongoing' : 'Not ongoing', [a[0]], () => setTaskOngoingNow(...a));
 export const abandonTask: typeof abandonTaskNow = (...a: Parameters<typeof abandonTaskNow>) => recorded(a[1] === false ? 'Reopen' : 'Abandon', [a[0]], () => abandonTaskNow(...a));
 export const createTask: typeof createTaskNow = (...a: Parameters<typeof createTaskNow>) => rememberCreated('Add a task', () => createTaskNow(...a));

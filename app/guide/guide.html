@@ -72,7 +72,7 @@ td:first-child { white-space: nowrap; }
 	<h1>User guide</h1>
 	<p class="sub">Everything you need to use the Tasks app on your phone and your computer: getting started, capturing, organising and getting things done.</p>
 	<figure><img src="desk-home.png" alt=""></figure>
-	<div class="meta"><span>Version of 19 November 2026</span><span>App address: https://pc-lou.tailc45f62.ts.net:8443</span></div>
+	<div class="meta"><span>Version of 20 November 2026</span><span>App address: https://pc-lou.tailc45f62.ts.net:8443</span></div>
 </div>
 
 <!-- ============================================================ CONTENTS -->
@@ -104,7 +104,7 @@ td:first-child { white-space: nowrap; }
 		<ul>
 			<li>Everything you think of goes into the <b>Inbox</b> first, in one tap.</li>
 			<li>Later, you give each task a <b>project</b>, <b>labels</b> and maybe a <b>date</b>, then <b>validate</b> it.</li>
-			<li>The <b>home page</b> then shows what to do now: <b>Today</b>, <b>This week</b>, <b>Red</b> (urgent) and <b>Available</b> (next actions). <b>+</b> next to a block's name: a new task with that block's label.</li>
+			<li>The <b>home page</b> then shows what to do now: <b>Today</b>, <b>This week</b>, <b>Red</b> (urgent) and <b>Available</b> (next actions), with <b>Ongoing</b> first when a task is in progress. <b>+</b> next to a block's name: a new task with that block's label. On a computer, drag a task (or the ticked ones) from Today onto This week, or back: its label changes.</li>
 			<li>It works on every device, even with no internet, and keeps everything in sync.</li>
 		</ul>
 	</div>
@@ -201,9 +201,9 @@ td:first-child { white-space: nowrap; }
 	<p class="lead">Capture first, think later. A task needs only a title to start with; it goes to the Inbox.</p>
 	<table>
 		<tr><th>Where</th><th>How</th></tr>
-		<tr><td>Computer</td><td>Press <kbd>n</kbd>, or the <b>+</b> at the top right. Type, <kbd>Enter</kbd>. <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> adds it and keeps the box open for the next one.</td></tr>
+		<tr><td>Computer</td><td>Press <kbd>n</kbd>, or the <b>+</b> at the top right. Type, <kbd>Enter</kbd>: it goes to the Inbox. If you want, fill in the rest first in the same window: project (then it skips the Inbox), section, start, due, <b>Remind</b>, <b>Repeat</b>, labels, notes; or the cart for a shopping item. <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> adds it and keeps the window open for the next one.</td></tr>
 		<tr><td>Computer, from anywhere</td><td>A key combination that opens a small New task box even when the app is closed (set it up once, see below).</td></tr>
-		<tr><td>Phone</td><td>The round <b>+</b> button at the bottom right.</td></tr>
+		<tr><td>Phone</td><td>The round <b>+</b> button at the bottom right: the same window.</td></tr>
 		<tr><td>Phone, from the home screen</td><td>Only if the app was installed with <b>Chrome or Brave on Android</b>: long-press the Tasks icon → <b>New task</b>, or drag that "New task" item onto your home screen for a one-tap button. Not available with Firefox or on an iPhone: use the round <b>+</b> instead.</td></tr>
 		<tr><td>From another app</td><td>Same condition (Android, installed with Chrome or Brave). In another app, for example on a web page, an e-mail or a message, tap <b>Share</b> and choose <b>Tasks</b> in the list of apps: the New task box opens with the page title or the text as the task's title and the link in its notes. Check it and tap <b>Add</b>.</td></tr>
 		<tr><td>Inside a project</td><td>At the bottom of a project's list (or of one of its sections): <b>Add a task to this project…</b> The task is created in that project and validated at once, without going through the Inbox.</td></tr>
@@ -227,7 +227,7 @@ td:first-child { white-space: nowrap; }
 		<li><b>Define</b> the task directly in its row: click the title to rename it, the project column to choose a project, the small + next to the labels to add some, the date columns for a start or due date. To see everything, open the task with the <b>+ at the right end of its row</b> (or <kbd>Enter</kbd>).</li>
 		<li><b>Validate</b>: click the <b>circle on the right</b> (or press <kbd>v</kbd>). It needs a project first. The task leaves the Inbox and appears in its project and on the home page if it has a home label.</li>
 		<li><b>Already done?</b> Right-click the circle (or press <kbd>x</kbd>): it is validated and completed in one go.</li>
-		<li><b>Straight into its project</b> (computer): drag the task onto the project in the menu. It is moved and validated in one go. The same when you choose its project in its row, or with <b>Move</b> for several selected tasks.</li>
+		<li><b>Straight into its project</b> (computer): drag the task onto the project in the menu. It is moved and validated in one go. The same when you choose its project in its row, or with <b>Move</b> for several selected tasks. On the phone, a project given from the Inbox (long press › Project) keeps the task in the Inbox, so you can finish it; it leaves when you validate it.</li>
 	</ol>
 	<div class="box tip">
 		<h4>Good to know</h4>
@@ -305,6 +305,7 @@ td:first-child { white-space: nowrap; }
 		<tr><td>Circle, title</td><td>Complete it; click the title to edit it (long titles use as many lines as needed; its labels stay in view, + adds one).</td></tr>
 		<tr><td><b>Shopping</b> switch</td><td>On: it is on the Shopping list (and leaves the Inbox if it was there). In the New task box, the cart (a grey icon shaped like Add; filled once ticked) with a title typed adds it to the Shopping list at once. Giving a task in the Inbox the <span class="chip" style="--c:#f2a93b">shopping</span> label does the same.</td></tr>
 		<tr><td><b>Pending</b> switch</td><td>On: the task is on hold (waiting for something, not now). It then shows nowhere, whatever its labels or dates: not on the home page, Tomorrow, Upcoming, the filters, the labels' pages, nor in the Weekly review except in "Pending tasks". On its project's page, <b>Pending</b> (⋯ on the phone) shows it, greyed out at the end. Switch it off to resume it. <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Z</kbd> undoes it.</td></tr>
+		<tr><td><b>Ongoing</b> switch</td><td>On: the task is in progress. It gets its own block, first on the home page, and comes first among the tasks to consider in Tomorrow and the Weekly review; in lists it is marked <i>ongoing</i>. Putting it on hold (Pending) switches it off.</td></tr>
 		<tr><td>Project</td><td>Where it belongs, with the project above it ("in HOME"). <b>↩ Inbox</b> sends it back to be defined again.</td></tr>
 		<tr><td>Section</td><td>Only when its project has sections.</td></tr>
 		<tr><td>Labels</td><td>Click a label to remove it; <b>+</b> to add one (type to find one, or create it).</td></tr>
@@ -324,7 +325,7 @@ td:first-child { white-space: nowrap; }
 	<h3>Labels</h3>
 	<ul>
 		<li>All your labels are in the menu, under <b>Labels</b>, sorted by colour then name, with a box to find one. Click one to see its tasks.</li>
-		<li>The first line holds the labels the app and the automations act on, in this order: <b>today</b> (tomorrow's / today's list), <b>week</b> (the week's list), <b>next-action</b>, <b>p1</b>, <b>overdue</b> and <b>last-day</b> (set by the server from due dates), <b>waiting-for</b>, <b>shopping</b>. Keep their names: renaming one stops what it drives. Your other labels come below, on their own line.</li>
+		<li>The first line holds the labels the app and the automations act on, in this order: <b>today</b> (tomorrow's / today's list), <b>week</b> (the week's list; a task never has both: giving one takes off the other, and the server gives <b>today</b> to a task due today or earlier and <b>week</b> to one due later this week), <b>next-action</b>, <b>p1</b>, <b>overdue</b> and <b>last-day</b> (set by the server from due dates), <b>waiting-for</b>, <b>shopping</b>. Keep their names: renaming one stops what it drives. Your other labels come below, on their own line.</li>
 		<li><b>Several labels at once</b>: on a label's page, click other labels in the menu to add them (marked), or a marked one to take it off; the list follows at once. On the page itself: <b>×</b> takes a label off, <b>+</b> adds one (the way to do it on the phone), and <b>All of them</b> / <b>Any of them</b>.</li>
 		<li><b>+</b> creates a label. Right-click a label to rename it or change its colour.</li>
 		<li>On a task: the <b>+</b> next to its labels, or <kbd>l</kbd>.</li>

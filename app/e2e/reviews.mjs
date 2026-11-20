@@ -125,7 +125,8 @@ await row.getByRole('button', { name: "Add it to the week's list", exact: true }
 await row.getByRole('button', { name: 'Tomorrow', exact: true }).click(); await p.waitForTimeout(2500);
 const pt = (await req('GET', `/api/v1/projects/${P.id}/tasks`)).find?.((x) => x.id === pastT.id) ?? (await req('GET', `/api/v1/tasks/${pastT.id}`));
 const pl = (pt.labels || []).map((l) => l.title);
-check('weekly: ☆ puts it on the week’s list and Tomorrow on tomorrow’s', pl.includes('week') && pl.includes('today'), JSON.stringify(pl));
+// 20 Nov 2026 (#575): never both; the last one given stays.
+check('weekly: the calendar puts it on the week’s list, then the moon moves it to tomorrow’s', !pl.includes('week') && pl.includes('today'), JSON.stringify(pl));
 if (shots) await p.screenshot({ path: `${shots}/weekly.png`, fullPage: true });
 // phone
 const ph = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

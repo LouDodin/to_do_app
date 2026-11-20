@@ -3,7 +3,7 @@
 	import DateField from './DateField.svelte';
 	import { goto } from '$app/navigation';
 	import { sortLabels } from '../utils/labelSort';
-	import { visibleLabels, isTaskPending, isAbandoned } from '../utils/context';
+	import { visibleLabels, isTaskPending, isAbandoned, isOngoing } from '../utils/context';
 	import { settings } from '../stores/settings.svelte';
 	import {
 		completeTask,
@@ -470,7 +470,7 @@
 					else startEdit();
 				}}
 			>
-				{#if task.done && isAbandoned(task)}<span class="pending-mark" title="Abandoned: closed without being done">abandoned</span>{:else if isTaskPending(task)}<span class="pending-mark" title="Pending (on hold)">pending</span>{/if}{task.title}
+				{#if task.done && isAbandoned(task)}<span class="pending-mark" title="Abandoned: closed without being done">abandoned</span>{:else if isTaskPending(task)}<span class="pending-mark" title="Pending (on hold)">pending</span>{:else if !task.done && isOngoing(task)}<span class="pending-mark ongoing-mark" title="Ongoing">ongoing</span>{/if}{task.title}
 			</button>
 		{/if}
 
@@ -983,7 +983,11 @@
 		color: var(--text-dim);
 		font-style: italic;
 	}
-	.pending-mark {
+	.ongoing-mark {
+		color: #00897b;
+		border-color: color-mix(in srgb, #00897b 45%, transparent);
+	}
+		.pending-mark {
 		display: inline-block;
 		font-style: normal;
 		font-size: var(--fs-xs);

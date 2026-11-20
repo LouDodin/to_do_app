@@ -29,12 +29,13 @@ const overflow = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
 	await p.keyboard.press('n');
 	const dlg = p.locator('[role=dialog][aria-label="New task"]');
 	await dlg.waitFor();
-	check('new task: just one text box', (await dlg.locator('input, textarea, select').count()) === 1, await dlg.locator('input, textarea, select').count());
+	// 20 Nov 2026 (#578): the full window, the Inbox unless another project is chosen.
+	check('new task: the cursor in the title, the project set to the Inbox', (await dlg.getByLabel('Task', { exact: true }).evaluate((e) => e === document.activeElement)) && (await dlg.getByLabel('Project', { exact: true }).locator('option:checked').innerText()).trim().toLowerCase() === 'inbox', await dlg.getByLabel('Project', { exact: true }).locator('option:checked').innerText());
 	const t1 = `Oct19 first ${stamp}`, t2 = `Oct19 second ${stamp} tomorrow #p1`;
-	await dlg.locator('input').fill(t1); await p.keyboard.press('Control+Enter');
+	await dlg.getByLabel('Task', { exact: true }).fill(t1); await p.keyboard.press('Control+Enter');
 	await p.waitForTimeout(600);
 	check('new task: Ctrl+Enter keeps the box open', (await dlg.count()) === 1);
-	await dlg.locator('input').fill(t2); await p.keyboard.press('Enter');
+	await dlg.getByLabel('Task', { exact: true }).fill(t2); await p.keyboard.press('Enter');
 	await p.waitForTimeout(800);
 	check('new task: Enter closes it', (await dlg.count()) === 0);
 	check('new task: "Added to the Inbox"', (await p.locator('.toast').allTextContents()).some((t) => /Added to the Inbox/.test(t)));

@@ -4,12 +4,15 @@
 	// to a day on Upcoming. The title, notes, then one row of small buttons: project, section, start,
 	// due, labels. Enter adds it and closes; Ctrl/⌘+Enter adds it and keeps the window open; Esc or
 	// a click outside closes. Put in a project, it is validated at once (it skips the Inbox).
+	// 20 Nov 2026 (Lou #578): also the window of the + button (inboxFirst: the Inbox unless another
+	// project is chosen), with a reminder, a repeat and 🛒 (a shopping item) besides.
 	import { onMount } from 'svelte';
 	import { portal } from '../actions/portal';
 	import { backCloses } from '../stores/overlays.svelte';
 	const LABEL_HEX: Record<string, string> = { today: '000000', week: '1e88e5', p1: 'd92c22', 'next-action': '5f5ff6' };
 	const touch = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches;
 	import LabelChip from './LabelChip.svelte';
+	import Icon from './Icon.svelte';
 	import { db } from '../db/schema';
 	import { liveState } from '../db/live.svelte';
 	import { createTask, ensureHiddenLabel } from '../actions/tasks';
@@ -18,14 +21,17 @@
 	import { settings } from '../stores/settings.svelte';
 	import { toastStore } from '../stores/toast.svelte';
 	import { isBinProject } from '../utils/bin';
+	import { repeatFields, type RepeatKind } from '../utils/recurrence';
+	import { addShoppingItem } from '../actions/shopping';
 
 	let {
 		projectId = undefined,
 		sectionId = null,
 		startDay = undefined,
 		labelTitles = [],
+		inboxFirst = false,
 		onClose
-	}: { projectId?: number; sectionId?: number | null; startDay?: Date; labelTitles?: string[]; onClose: () => void } = $props();
+	}: { projectId?: number; sectionId?: number | null; startDay?: Date; labelTitles?: string[]; inboxFirst?: boolean; onClose: () => void } = $props();
 
 	const LAST = 'new_task_last_project';
 	const projects = liveState(() => db.projects.filter((p) => !p.is_archived && !isBinProject(p)).toArray(), []);
@@ -34,12 +40,15 @@
 	let title = $state('');
 	let notes = $state('');
 	// svelte-ignore state_referenced_locally
-	let project = $state<number | null>(projectId ?? readLast());
+	let project = $state<number | null>(projectId ?? (inboxFirst ? null : readLast()));
 	// svelte-ignore state_referenced_locally
 	let section = $state<number | null>(sectionId);
 	// svelte-ignore state_referenced_locally
 	let start = $state<string | null>(startDay ? at(startDay, 9) : null);
 	let due = $state<string | null>(null);
+	let remind = $state<string | null>(null);
+	let repeat = $state<RepeatKind>('none');
+	let shopping = $state(false);
 	let labelIds = $state<number[]>([]);
 	// Labels given from the start (19 Nov 2026: + next to a block of the home page, such as
 	// "today" for Today); created if missing.
@@ -49,7 +58,7 @@
 		const ids = await Promise.all(labelTitles.map((t) => ensureLabel(t, LABEL_HEX[t] ?? '888888')));
 		labelIds = [...new Set([...labelIds, ...ids])];
 	});
-	let open = $state<'start' | 'due' | 'labels' | null>(null);
+	let open = $state<'start' | 'due' | 'remind' | 'labels' | null>(null);
 	let query = $state('');
 	let busy = $state(false);
 	let titleEl: HTMLInputElement | undefined = $state();
@@ -129,9 +138,26 @@
 
 	async function add(keepOpen: boolean) {
 		const t = title.trim();
-		if (!t || busy || !project) return;
+		if (!t || busy || (!project && !shopping)) return;
 		busy = true;
 		try {
+			if (shopping) {
+				await addShoppingItem(t, notes.trim() || undefined);
+				toastStore.success('Added to the shopping list');
+				if (!keepOpen) return onClose();
+				title = '';
+				notes = '';
+				titleEl?.focus();
+				return;
+			}
+			if (!project) return;
+			// A repeat needs a due date to start from: tomorrow 9:00 when none was given.
+			let dueAt = due;
+			if (repeat !== 'none' && !dueAt) {
+				const d = plus(1);
+				d.setHours(9, 0, 0, 0);
+				dueAt = d.toISOString();
+			}
 			const byId = new Map((await db.projects.toArray()).map((p) => [p.id, p]));
 			const validated = isInboxProject(project, byId) ? [] : [await ensureHiddenLabel(VALIDATED_LABEL, '4caf50')];
 			await createTask({
@@ -139,25 +165,29 @@
 				project_id: project,
 				description: notes.trim() || undefined,
 				start_date: start ?? new Date().toISOString(),
-				due_date: due,
+				due_date: dueAt,
 				label_ids: [...validated, ...labelIds],
+				...(repeat !== 'none' ? repeatFields(repeat) : {}),
+				...(remind ? { reminders: [{ reminder: remind }] } : {}),
 				section_id: sections.value.some((s) => s.id === section) ? section : null
 			});
 			// From a Home block (19 Nov 2026): a task left in the Inbox only shows in that block once
 			// sorted, so say where it went.
 			if (labelTitles.length && !validated.length) toastStore.success('In the Inbox: it shows here once sorted');
-			if (projectId === undefined) {
+			if (projectId === undefined && !inboxFirst) {
 				try {
 					localStorage.setItem(LAST, String(project));
 				} catch {
 					/* not remembered */
 				}
 			}
-			toastStore.success('Task added');
+			toastStore.success(validated.length ? 'Task added' : 'Added to the Inbox');
 			if (!keepOpen) return onClose();
 			title = '';
 			notes = '';
 			labelIds = [];
+			remind = null;
+			repeat = 'none';
 			titleEl?.focus();
 		} catch (e) {
 			toastStore.error('Could not add the task: ' + (e as Error).message);
@@ -174,6 +204,11 @@
 			e.preventDefault();
 			void add(e.metaKey || e.ctrlKey);
 		}
+	}
+	function localValue(iso: string) {
+		const d = new Date(iso);
+		const p = (n: number) => String(n).padStart(2, '0');
+		return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 	}
 	function setDate(which: 'start' | 'due', d: Date | null) {
 		const v = d ? at(d, which === 'due' ? 23 : 9) : null;
@@ -227,6 +262,27 @@
 				</span>
 			{/each}
 			<span class="wrap">
+				<button class="pill" class:set={!!remind} onclick={() => (open = open === 'remind' ? null : 'remind')} aria-label="Reminder" aria-expanded={open === 'remind'}>
+					<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 11.5V7a4 4 0 0 1 8 0v4.5l1 1H3zM6.5 14h3" /></svg>
+					{remind ? `${short(remind)} ${new Date(remind).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : 'Remind'}
+				</button>
+				{#if open === 'remind'}
+					<div class="pop">
+						<input type="datetime-local" aria-label="Remind me at" value={remind ? localValue(remind) : ''} onchange={(e) => { const v = (e.target as HTMLInputElement).value; remind = v ? new Date(v).toISOString() : null; }} />
+						{#if remind}<button class="clear" onclick={() => { remind = null; open = null; }}>None</button>{/if}
+					</div>
+				{/if}
+			</span>
+			<label class="pill sel" class:set={repeat !== 'none'} title="Repeat">
+				<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5A4.5 4.5 0 0 1 11.5 4.5L13 6M13 2.5V6H9.5M13 9.5A4.5 4.5 0 0 1 4.5 11.5L3 10M3 13.5V10h3.5" /></svg>
+				<select aria-label="Repeat" bind:value={repeat}>
+					<option value="none">Repeat</option>
+					<option value="week">Every week</option>
+					<option value="month">Every month</option>
+					<option value="year">Every year</option>
+				</select>
+			</label>
+			<span class="wrap">
 				<button class="pill" class:set={labelIds.length > 0} onclick={() => { open = open === 'labels' ? null : 'labels'; query = ''; }} aria-label="Labels" aria-expanded={open === 'labels'}>
 					<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 2.5h5.5l5.5 5.5-5.5 5.5-5.5-5.5z" /><circle cx="5.5" cy="5.5" r="1" /></svg>
 					Labels
@@ -247,6 +303,7 @@
 			</span>
 			<!-- The labels given, each with ×, in the row itself (13 Nov 2026: a number was not enough). -->
 			{#each chosen as l (l.id)}<LabelChip label={l} onRemove={() => (labelIds = labelIds.filter((x) => x !== l.id))} />{/each}
+			{#if inboxFirst}<button class="pill cart" class:set={shopping} aria-pressed={shopping} aria-label="Shopping" title="A shopping item: straight onto the shopping list" onclick={() => (shopping = !shopping)}><Icon name="cart" size={14} /></button>{/if}
 			<button class="add" disabled={!title.trim() || busy} onclick={() => add(false)} aria-label="Add the task">Add</button>
 		</div>
 		<p class="tip">Enter: add · ⌘/Ctrl+Enter: add another · Esc: close</p>

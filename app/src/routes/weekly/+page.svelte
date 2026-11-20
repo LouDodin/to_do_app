@@ -17,7 +17,7 @@
 	import { db } from '../../lib/db/schema';
 	import { inferredContext, rootProjectTitle } from '../../lib/utils/context';
 	import { isBinProject } from '../../lib/utils/bin';
-	import { weeklyReview, UNTOUCHED_DAYS, candidates as findCandidates, excludedProjectIds, plannedNotDone, WEEK_LABEL } from '../../lib/utils/reviews';
+	import { weeklyReview, UNTOUCHED_DAYS, candidates as findCandidates, excludedProjectIds, plannedNotDone, WEEK_LABEL, ongoingTasks } from '../../lib/utils/reviews';
 	import { ensureLabel } from '../../lib/actions/labels';
 	import TaskList from '../../lib/components/TaskList.svelte';
 	import ReviewStep from '../../lib/components/ReviewStep.svelte';
@@ -60,13 +60,19 @@
 	const missed = $derived.by(() => {
 		const ids = new Set<number>(weekAtOpen ?? []);
 		for (const k of lastDays(7)) for (const id of dayPlans.plans[k] ?? []) ids.add(id);
-		return plannedNotDone(tasks.value, allProjects.value, ids);
+		return plannedNotDone(tasks.value, allProjects.value, ids).filter((t) => !ongoingIds.has(t.id));
 	});
+	// Ongoing first, and only there (20 Nov 2026, Lou #582).
+	const ongoingAll = $derived(ongoingTasks(tasks.value, allProjects.value));
+	const ongoingIds = $derived(new Set(ongoingAll.map((t) => t.id)));
 	// 3. The week's list (if not planned this week and not done), then the rest worth a look.
 	const missedIds = $derived(new Set(missed.map((t) => t.id)));
 	const weekList = $derived(tasks.value.filter((t) => !t.done && has(t, WEEK_LABEL) && !missedIds.has(t.id)));
 	const groups = $derived.by(() => {
-		const seen = new Set([...missedIds, ...weekList.map((t) => t.id)]);
+		const seen0 = new Set([...missedIds, ...weekList.map((t) => t.id)]);
+		// Ongoing first (20 Nov 2026, Lou #582).
+		const ongoing = ongoingAll.filter((t) => !seen0.has(t.id));
+		const seen = new Set([...seen0, ...ongoing.map((t) => t.id)]);
 		const overdue = r.overdue.filter((t) => !seen.has(t.id));
 		const next7 = r.nextWeek.filter((t) => !seen.has(t.id));
 		const skip = new Set([...seen, ...overdue.map((t) => t.id), ...next7.map((t) => t.id)]);
@@ -78,6 +84,7 @@
 			singleProjects: new Set(allProjects.value.filter((p) => isSingleTasksProject(p)).map((p) => p.id))
 		}).map((g) => [g.group === 'Due soon' ? 'Due in the next two weeks' : g.group, g.tasks] as [string, VikunjaTask[]]);
 		const out: [string, VikunjaTask[]][] = [];
+		if (ongoing.length) out.push(['Ongoing', ongoing]);
 		if (missed.length) out.push(['Planned this week, not done', missed]);
 		if (overdue.length) out.push(['Overdue', overdue]);
 		if (next7.length) out.push(['Due in the next 7 days', next7]);

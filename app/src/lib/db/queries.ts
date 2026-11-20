@@ -2,7 +2,7 @@ import { db } from './schema';
 import { compileFilter, makeResolver } from '../utils/filterEval';
 import type { VikunjaTask, VikunjaProject } from '../types';
 import { hasDate } from '../utils/dates';
-import { taskContext, inView, inReview, REVIEW_LABEL, validatedMarkInUse, isTaskPending } from '../utils/context';
+import { taskContext, inView, inReview, REVIEW_LABEL, validatedMarkInUse, isTaskPending, isOngoing } from '../utils/context';
 import { isBinProject } from '../utils/bin';
 import { movedOutOfInbox } from '../stores/inboxGuard';
 
@@ -215,6 +215,7 @@ function isBinTask(t: VikunjaTask, byId: Map<number, VikunjaProject>): boolean {
 // utils/selfFilter.ts) instead of "All": with no criterion it lists `all` (the tasks of no other
 // block), with criteria it searches the whole `pool`.
 export async function getHomeBlocks(area: 'input' | 'all' | 'Pro' | 'Perso'): Promise<{
+	ongoing: VikunjaTask[];
 	today: VikunjaTask[];
 	week: VikunjaTask[];
 	red: VikunjaTask[];
@@ -226,7 +227,7 @@ export async function getHomeBlocks(area: 'input' | 'all' | 'Pro' | 'Perso'): Pr
 	const basePool = await tasksInView(area);
 	// The Input view is a plain "to sort" list, with no blocks and no date rules.
 	if (area === 'input') {
-		return { today: [], week: [], red: [], available: [], all: [], pool: [], unsorted: basePool };
+		return { ongoing: [], today: [], week: [], red: [], available: [], all: [], pool: [], unsorted: basePool };
 	}
 	// Tasks that haven't started yet are listed in their project but never
 	// on the home page, in any block. Completed ones aren't hidden: a task
@@ -236,7 +237,10 @@ export async function getHomeBlocks(area: 'input' | 'all' | 'Pro' | 'Perso'): Pr
 	const pool = basePool.filter((t) => t.done || (!isTaskPending(t) && (!hasDate(t.start_date) || new Date(t.start_date).getTime() <= now)));
 
 	const single = new Set((await db.projects.toArray()).filter((p) => isSingleTasksProject(p)).map((p) => p.id));
-	const { today, week, red, available, all } = partitionHomeBlocks(pool, single);
+	// Ongoing tasks have their own block, first (20 Nov 2026, Lou #582), and no other.
+	const ongoing = pool.filter((t) => !t.done && isOngoing(t));
+	const ongoingIds = new Set(ongoing.map((t) => t.id));
+	const { today, week, red, available, all } = partitionHomeBlocks(pool.filter((t) => !ongoingIds.has(t.id)), single);
 
-	return { today, week, red, available, all, pool, unsorted: [] };
+	return { ongoing, today, week, red, available, all, pool, unsorted: [] };
 }

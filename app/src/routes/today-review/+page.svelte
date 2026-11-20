@@ -13,7 +13,7 @@
 	import { getLabelIdByTitle, isSingleTasksProject } from '../../lib/db/queries';
 	import { addTaskLabel, removeTaskLabel } from '../../lib/actions/tasks';
 	import { db } from '../../lib/db/schema';
-	import { tomorrowReview, weeklyReview, candidates as findCandidates, excludedProjectIds, plannedNotDone } from '../../lib/utils/reviews';
+	import { tomorrowReview, weeklyReview, candidates as findCandidates, excludedProjectIds, plannedNotDone, ongoingTasks } from '../../lib/utils/reviews';
 	import TaskList from '../../lib/components/TaskList.svelte';
 	import ReviewStep from '../../lib/components/ReviewStep.svelte';
 	import type { VikunjaTask } from '../../lib/types';
@@ -37,21 +37,26 @@
 	const hasToday = (t: VikunjaTask) => (t.labels ?? []).some((l) => l.title.toLowerCase() === 'today');
 
 	// On today's list at some point today (utils/dayPlan.ts), still to do.
-	const leftover = $derived(plannedNotDone(tasks.value, projects.value, new Set(dayPlans.plans[dayKey(new Date())] ?? [])));
+	// Ongoing first, and only there (20 Nov 2026, Lou #582).
+	const ongoingAll = $derived(ongoingTasks(tasks.value, projects.value));
+	const leftover = $derived(plannedNotDone(tasks.value, projects.value, new Set(dayPlans.plans[dayKey(new Date())] ?? [])).filter((t) => !ongoingAll.includes(t)));
 	const leftoverIds = $derived(new Set(leftover.map((t) => t.id)));
 	// 1. Chosen for tomorrow, apart from the tasks planned for today and not done.
 	const chosen = $derived(r.chosen.filter((t) => !leftoverIds.has(t.id)));
 	// 2. Everything else worth a look, in groups.
 	const shown = $derived(new Set([...r.chosen, ...leftover].map((t) => t.id)));
 	const groups = $derived.by(() => {
-		const dueSoon = r.dueSoon.filter((t) => !shown.has(t.id));
-		const skip = new Set([...shown, ...dueSoon.map((t) => t.id)]);
+		// Ongoing first (20 Nov 2026, Lou #582).
+		const ongoing = ongoingAll.filter((t) => !shown.has(t.id));
+		const dueSoon = r.dueSoon.filter((t) => !shown.has(t.id) && !ongoing.includes(t));
+		const skip = new Set([...shown, ...ongoing.map((t) => t.id), ...dueSoon.map((t) => t.id)]);
 		const rest = findCandidates(tasks.value, projects.value, {
 			skip,
 			excluded: excludedProjectIds(filters.value.find((f) => f.title.toLowerCase() === 'tomorrow')?.filters?.filter),
 			singleProjects: new Set(projects.value.filter((p) => isSingleTasksProject(p)).map((p) => p.id))
 		}).map((g) => [g.group === 'Due soon' ? 'Due in the next two weeks' : g.group, g.tasks] as [string, VikunjaTask[]]);
 		return [
+			...(ongoing.length ? [['Ongoing', ongoing] as [string, VikunjaTask[]]] : []),
 			...(leftover.length ? [['Planned for today, not done', leftover] as [string, VikunjaTask[]]] : []),
 			...(dueSoon.length ? [['Due by tomorrow', dueSoon] as [string, VikunjaTask[]]] : []),
 			...rest

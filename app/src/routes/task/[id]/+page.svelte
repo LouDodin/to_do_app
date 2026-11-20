@@ -35,8 +35,8 @@
 	import InlineProjectPicker from '../../../lib/components/InlineProjectPicker.svelte';
 	import { clickOutside } from '../../../lib/actions/clickOutside';
 	import { getInboxProject } from '../../../lib/db/queries';
-	import { isInboxProject, inReview, isTaskPending, isAbandoned } from '../../../lib/utils/context';
-	import { validateTask, setTaskPending, abandonTask } from '../../../lib/actions/tasks';
+	import { isInboxProject, inReview, isTaskPending, isAbandoned, isOngoing } from '../../../lib/utils/context';
+	import { validateTask, setTaskPending, abandonTask, setTaskOngoing } from '../../../lib/actions/tasks';
 
 	import { renderDescription } from '../../../lib/utils/markdown';
 
@@ -282,6 +282,10 @@
 			<label class="switch pend-toggle" title="On hold: stays in its project, leaves the home page and Tomorrow until resumed">
 				<input type="checkbox" checked={isTaskPending(task.value)} onchange={(e) => setTaskPending(taskId, (e.target as HTMLInputElement).checked)} />
 				Pending
+			</label>
+			<label class="switch ongoing-toggle" title="In progress: at the top of the home page and of the reviews">
+				<input type="checkbox" checked={isOngoing(task.value)} onchange={(e) => setTaskOngoing(taskId, (e.target as HTMLInputElement).checked)} />
+				Ongoing
 			</label>
 		</div>
 

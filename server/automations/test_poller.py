@@ -201,7 +201,7 @@ class AccountLabels(unittest.TestCase):
 
     def setUp(self):
         self.saved = {k: getattr(wl, k) for k in ("get_all_labels", "api_request", "log", "NEXT_ACTION_LABEL_ID", "TODAY_LABEL_ID",
-                                                    "OVERDUE_LABEL_ID", "LAST_DAY_LABEL_ID", "PROTECTED_LABEL_IDS", "LABELS_RESOLVED")}
+                                                    "OVERDUE_LABEL_ID", "LAST_DAY_LABEL_ID", "WEEK_LABEL_ID", "PROTECTED_LABEL_IDS", "LABELS_RESOLVED")}
         self.created = []
         wl.log = lambda m: None
         def put(method, path, payload=None):
@@ -215,16 +215,17 @@ class AccountLabels(unittest.TestCase):
 
     def test_found_by_name_oldest_first(self):
         wl.get_all_labels = lambda: [{"id": 40, "title": "Next-Action"}, {"id": 7, "title": "next-action"}, {"id": 8, "title": "today"},
-                                     {"id": 9, "title": "overdue"}, {"id": 10, "title": "last-day"}, {"id": 4, "title": "dad"}]
+                                     {"id": 9, "title": "overdue"}, {"id": 10, "title": "last-day"}, {"id": 11, "title": "week"}, {"id": 4, "title": "dad"}]
         wl.resolve_automation_labels()
         self.assertEqual((wl.NEXT_ACTION_LABEL_ID, wl.TODAY_LABEL_ID, wl.OVERDUE_LABEL_ID, wl.LAST_DAY_LABEL_ID), (7, 8, 9, 10))
-        self.assertEqual(wl.PROTECTED_LABEL_IDS, {7, 8, 9, 10})
+        self.assertEqual(wl.WEEK_LABEL_ID, 11)
+        self.assertEqual(wl.PROTECTED_LABEL_IDS, {7, 8, 9, 10, 11})
         self.assertEqual(self.created, [])
 
     def test_a_new_account_gets_the_missing_labels(self):
         wl.get_all_labels = lambda: [{"id": 50, "title": "today"}]
         wl.resolve_automation_labels()
-        self.assertEqual(self.created, ["next-action", "overdue", "last-day"])
+        self.assertEqual(self.created, ["next-action", "overdue", "last-day", "week"])
         self.assertEqual(wl.TODAY_LABEL_ID, 50)
         self.assertNotIn(4, wl.PROTECTED_LABEL_IDS)  # never another account's ids
 
