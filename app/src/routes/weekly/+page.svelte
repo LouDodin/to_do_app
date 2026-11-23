@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown as featureShown } from '../../lib/stores/features.svelte';
 	// Weekly review. Redone 13 Nov 2026 (Lou: as few sections as possible, only what is ahead, no
 	// figures; on Sundays it replaces Tomorrow's priorities, so Tomorrow's choices are here too):
 	//   1. Clean up: the computer (Desktop, Downloads, Emails) and the Inbox.
@@ -63,7 +64,7 @@
 		return plannedNotDone(tasks.value, allProjects.value, ids).filter((t) => !ongoingIds.has(t.id));
 	});
 	// Ongoing first, and only there (20 Nov 2026, Lou #582).
-	const ongoingAll = $derived(ongoingTasks(tasks.value, allProjects.value));
+	const ongoingAll = $derived(featureShown('ongoing') ? ongoingTasks(tasks.value, allProjects.value) : []);
 	const ongoingIds = $derived(new Set(ongoingAll.map((t) => t.id)));
 	// 3. The week's list (if not planned this week and not done), then the rest worth a look.
 	const missedIds = $derived(new Set(missed.map((t) => t.id)));

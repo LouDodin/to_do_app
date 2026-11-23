@@ -648,7 +648,9 @@ def check_automations():
                 mine = [r for m, r in bad if m == n]
                 level = 'fail' if any(r.level == 'fail' for r in mine) else 'warn'
                 add('Automation data checks' if n == 'you' else per_account_name('Automation data checks', n), level,
-                    '; '.join(f'{r.name}: {r.summary}' + (f' ({r.items[0]})' if r.items else '') for r in mine)[:400],
+                    # Every item, so each task concerned can be found (23 Nov 2026): the app links
+                    # "task #N" to the task.
+                    '; '.join(f'{r.name}: {r.summary}' + (f' ({", ".join(r.items)})' if r.items else '') for r in mine)[:600],
                     'Not urgent unless it says "fail": send Claude the Error report; nothing is lost.', account=acct(n))
     except Exception as e:  # noqa: BLE001
         add('Automation data checks', 'warn', f'could not run ({e})', 'Send Claude the Error report.')

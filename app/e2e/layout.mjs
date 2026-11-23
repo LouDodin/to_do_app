@@ -52,7 +52,7 @@ const tabName = async (p) => (await p.locator('[role=tab][aria-selected=true]').
 	await p.getByRole('tab', { name: 'Updates' }).click(); await p.waitForTimeout(500);
 	const all = await p.locator('.updates .entry').count();
 	check('Updates lists every update', all >= 10, all);
-	check('the ones not seen yet are marked New', (await p.locator('.updates .new').count()) === 8, await p.locator('.updates .new').count()); // entries after 6 Nov (one per day)
+	check('the ones not seen yet are marked New', (await p.locator('.updates .new').count()) === 9, await p.locator('.updates .new').count()); // entries after 6 Nov (one per day)
 	await p.getByLabel('Search the updates').fill('undo'); await p.waitForTimeout(300);
 	const hits = await p.locator('.updates .entry').count();
 	const marks = await p.locator('.updates mark').allInnerTexts();

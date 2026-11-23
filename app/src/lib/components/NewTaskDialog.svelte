@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown } from '../stores/features.svelte';
 	// A new task, set up in one small window (13 Nov 2026; redone the same day: the first one
 	// overflowed its box on the Mac). Opened by + next to a project's or a section's name, and next
 	// to a day on Upcoming. The title, notes, then one row of small buttons: project, section, start,
@@ -261,6 +262,7 @@
 					{/if}
 				</span>
 			{/each}
+			{#if shown('reminders')}
 			<span class="wrap">
 				<button class="pill" class:set={!!remind} onclick={() => (open = open === 'remind' ? null : 'remind')} aria-label="Reminder" aria-expanded={open === 'remind'}>
 					<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 11.5V7a4 4 0 0 1 8 0v4.5l1 1H3zM6.5 14h3" /></svg>
@@ -273,6 +275,7 @@
 					</div>
 				{/if}
 			</span>
+			{/if}
 			<label class="pill sel" class:set={repeat !== 'none'} title="Repeat">
 				<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5A4.5 4.5 0 0 1 11.5 4.5L13 6M13 2.5V6H9.5M13 9.5A4.5 4.5 0 0 1 4.5 11.5L3 10M3 13.5V10h3.5" /></svg>
 				<select aria-label="Repeat" bind:value={repeat}>
@@ -303,7 +306,7 @@
 			</span>
 			<!-- The labels given, each with ×, in the row itself (13 Nov 2026: a number was not enough). -->
 			{#each chosen as l (l.id)}<LabelChip label={l} onRemove={() => (labelIds = labelIds.filter((x) => x !== l.id))} />{/each}
-			{#if inboxFirst}<button class="pill cart" class:set={shopping} aria-pressed={shopping} aria-label="Shopping" title="A shopping item: straight onto the shopping list" onclick={() => (shopping = !shopping)}><Icon name="cart" size={14} /></button>{/if}
+			{#if inboxFirst && shown('page:shopping')}<button class="pill cart" class:set={shopping} aria-pressed={shopping} aria-label="Shopping" title="A shopping item: straight onto the shopping list" onclick={() => (shopping = !shopping)}><Icon name="cart" size={14} /></button>{/if}
 			<button class="add" disabled={!title.trim() || busy} onclick={() => add(false)} aria-label="Add the task">Add</button>
 		</div>
 		<p class="tip">Enter: add · ⌘/Ctrl+Enter: add another · Esc: close</p>

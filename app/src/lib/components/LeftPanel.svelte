@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown } from '../stores/features.svelte';
 	import Icon from './Icon.svelte';
 	import { page } from '$app/state';
 	import { db } from '../db/schema';
@@ -105,12 +106,12 @@
 	<div class="scroll scroll-y">
 		<nav class="places" aria-label="Pages">
 			<a href="/inbox" class="place" class:active={page.url.pathname === '/inbox'}><span class="ic"><Icon name="inbox" size={16} /></span>Inbox</a>
-			<a href="/shopping" class="place" class:active={page.url.pathname === '/shopping'}><span class="ic"><Icon name="cart" size={16} /></span>Shopping</a>
-			<a href="/upcoming" class="place" class:active={page.url.pathname === '/upcoming'}><span class="ic"><Icon name="upcoming" size={16} /></span>Upcoming</a>
-			<a href="/today-review" class="place" class:active={page.url.pathname === '/today-review'}><span class="ic"><Icon name="moon" size={16} /></span>Tomorrow</a>
-			<a href="/weekly" class="place" class:active={page.url.pathname === '/weekly'}><span class="ic"><Icon name="calendar" size={16} /></span>Weekly review</a>
+			{#if shown('page:shopping')}<a href="/shopping" class="place" class:active={page.url.pathname === '/shopping'}><span class="ic"><Icon name="cart" size={16} /></span>Shopping</a>{/if}
+			{#if shown('page:upcoming')}<a href="/upcoming" class="place" class:active={page.url.pathname === '/upcoming'}><span class="ic"><Icon name="upcoming" size={16} /></span>Upcoming</a>{/if}
+			{#if shown('page:tomorrow')}<a href="/today-review" class="place" class:active={page.url.pathname === '/today-review'}><span class="ic"><Icon name="moon" size={16} /></span>Tomorrow</a>{/if}
+			{#if shown('page:weekly')}<a href="/weekly" class="place" class:active={page.url.pathname === '/weekly'}><span class="ic"><Icon name="calendar" size={16} /></span>Weekly review</a>{/if}
 			<!-- The Bin with the pages (13 Nov 2026), no longer pinned at the bottom. -->
-			<a href="/bin" class="place" class:active={page.url.pathname === '/bin'}><span class="ic"><Icon name="trash" size={16} /></span>Bin</a>
+			{#if shown('page:bin')}<a href="/bin" class="place" class:active={page.url.pathname === '/bin'}><span class="ic"><Icon name="trash" size={16} /></span>Bin</a>{/if}
 		</nav>
 
 		<section class="block">

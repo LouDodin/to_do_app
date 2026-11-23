@@ -353,6 +353,15 @@ The health check's "Off-PC copy" line now raises only one warning: **no copy has
 
 Since Vikunja 2.7.1, each release also contains another program for Windows ("veans", a command-line tool). `update-vikunja` downloaded that one instead of Vikunja, so its test failed (nothing was changed: you stayed on 2.7.0). It now takes only the `vikunja-…-windows-4.0-amd64` build.
 
+## 23 Nov 2026: pages and features per account; tasks named in data checks
+
+| What | Detail |
+|---|---|
+| "relation 30 precedes 207 points at a missing task" | A false alarm: #207 ("test task") was deleted from the Bin, so Vikunja keeps it in its own trash, and the link from #30 ("Work on my plan for the next months") stays until Vikunja purges it. The app never shows such links. `automations/healthcheck.py` now counts links to trashed tasks as harmless leftovers (info, not a warning). |
+| Finding the tasks a check is about | Checks name tasks as "task #N"; the health line lists every item (no longer only the first); in Help › Status each "task #N" is a link that opens the task, with its title when it is yours. `tools/healthcheck.py`, `SettingsContent.svelte`. Test added in `test_healthcheck.py`. |
+| Settings › Pages and features | Each account chooses what it sees, on all its devices (account setting `tasks_hidden_features`; only what is switched off is stored, so anything new appears by default). Pages: Shopping (with its cart buttons), Upcoming, Tomorrow, Weekly review, Bin (the Inbox always stays). Home blocks: Ongoing, Today, This week, Red, Available. Features: All / Pro / Perso switch (off: everything shown), Ongoing tasks, Reminders. A page left out disappears from the menu and its g-shortcut; its address still works. Test `e2e/nov23.mjs` (10). |
+| Overdue (21 Nov) | "Take keyboard from work at home" was marked overdue at 00:00 on 21 Nov, as it should; the screenshot was taken before the app had synced. |
+
 ## 20 Nov 2026 (later): pending sub-projects on a project page
 
 | What | Detail |

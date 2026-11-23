@@ -154,6 +154,11 @@ def load_sqlite(path, owner=None):
         labels_of = {}
         for r in c.execute("select task_id, label_id from label_tasks"):
             labels_of.setdefault(r["task_id"], set()).add(r["label_id"])
+        # Vikunja's own trash (23 Nov 2026): a task deleted for good from the app's Bin is only
+        # marked deleted, and links to it stay until Vikunja purges it. Harmless: the app never
+        # shows them.
+        trashed = {r["id"] for r in c.execute("select id, deleted_at from tasks")
+                   if r["deleted_at"] and not str(r["deleted_at"]).startswith(ZERO_DATE)}
         tasks = [
             {
                 "id": r["id"], "title": r["title"], "done": bool(r["done"]), "due": r["due_date"],
@@ -189,7 +194,7 @@ def load_sqlite(path, owner=None):
             filters.append({"id": r["id"], "title": r["title"], "filter": f})
         c.close()
         return {"tasks": tasks, "labels": labels, "projects": projects, "relations": relations,
-                "filters": filters, "source": "db"}
+                "filters": filters, "source": "db", "trashed": trashed}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -381,16 +386,23 @@ def check_project_tree(snap, **_):
 def check_relations(snap, **_):
     ids = {t["id"] for t in snap["tasks"]}
     rels = {(a, b, k) for a, b, k in snap["relations"]}
+    trashed = snap.get("trashed") or set()
     inverse = {"precedes": "follows", "follows": "precedes", "subtask": "parenttask", "parenttask": "subtask"}
     problems, leftovers = [], []
     for a, b, k in rels:
         if a == b:
-            problems.append(f"task {a} is related to itself")
+            problems.append(f"task #{a} is related to itself")
         elif a not in ids or b not in ids:
-            # 'copied from / to' links are only history: a deleted copy leaves them behind, harmlessly
-            (leftovers if k in ("copiedfrom", "copiedto") else problems).append(f"relation {a} {k} {b} points at a missing task")
+            # 'copied from / to' links are only history: a deleted copy leaves them behind, harmlessly;
+            # so do links to a task in Vikunja's trash (deleted from the Bin), until it is purged.
+            gone = b if a in ids else a
+            here = a if a in ids else b
+            if k in ("copiedfrom", "copiedto") or gone in trashed:
+                leftovers.append(f"task #{here} {k} a deleted task (#{gone})")
+            else:
+                problems.append(f"task #{here} {k} a missing task (#{gone})")
         elif k in inverse and (b, a, inverse[k]) not in rels:
-            problems.append(f"relation {a} {k} {b} has no matching {inverse[k]}")
+            problems.append(f"task #{a} {k} task #{b}, but #{b} has no matching {inverse[k]}")
     graph = {}
     for a, b, k in rels:
         if k == "precedes":
@@ -401,7 +413,7 @@ def check_relations(snap, **_):
         color[n] = 1
         for m in graph.get(n, []):
             if color.get(m) == 1:
-                cyc.append(" → ".join(map(str, path + [n, m])))
+                cyc.append(" → ".join(f"#{x}" for x in path + [n, m]))
             elif color.get(m) is None:
                 dfs(m, path + [n])
         color[n] = 2
@@ -411,7 +423,7 @@ def check_relations(snap, **_):
             dfs(n, [])
     problems += [f"cycle {c}" for c in cyc]
     if not problems and leftovers:
-        return Result("relations", "info", f"{len(leftovers)} leftover copy link(s) to deleted tasks (harmless)", listed(sorted(leftovers)))
+        return Result("relations", "info", f"{len(leftovers)} leftover link(s) to deleted tasks (harmless)", listed(sorted(leftovers)))
     if not problems:
         return Result("relations", "ok", "no dangling, one-sided or circular relations")
     return Result("relations", "fail" if cyc else "warn", f"{len(problems)} relation problem(s)", listed(sorted(set(problems))))

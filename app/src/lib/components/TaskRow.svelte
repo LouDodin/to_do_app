@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown as featureShown } from '../stores/features.svelte';
 	import Icon from './Icon.svelte';
 	import DateField from './DateField.svelte';
 	import { goto } from '$app/navigation';
@@ -470,7 +471,7 @@
 					else startEdit();
 				}}
 			>
-				{#if task.done && isAbandoned(task)}<span class="pending-mark" title="Abandoned: closed without being done">abandoned</span>{:else if isTaskPending(task)}<span class="pending-mark" title="Pending (on hold)">pending</span>{:else if !task.done && isOngoing(task)}<span class="pending-mark ongoing-mark" title="Ongoing">ongoing</span>{/if}{task.title}
+				{#if task.done && isAbandoned(task)}<span class="pending-mark" title="Abandoned: closed without being done">abandoned</span>{:else if isTaskPending(task)}<span class="pending-mark" title="Pending (on hold)">pending</span>{:else if !task.done && isOngoing(task) && featureShown('ongoing')}<span class="pending-mark ongoing-mark" title="Ongoing">ongoing</span>{/if}{task.title}
 			</button>
 		{/if}
 

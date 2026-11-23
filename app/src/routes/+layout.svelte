@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { areaFilter } from '../lib/stores/areaFilter.svelte';
+	import { shown, loadFeatures, PAGE_PATHS, type Feature } from '../lib/stores/features.svelte';
 	import Icon from '../lib/components/Icon.svelte';
 	import '../lib/app.css';
 	import favicon from '$lib/assets/favicon.svg';
@@ -172,6 +174,12 @@
 	});
 
 	onMount(() => noAutofill());
+	// Pages and features of this account (Settings): the device's choice at once, then the account's.
+	onMount(() => void loadFeatures());
+	// Without the All / Pro / Perso switch, everything is shown.
+	$effect(() => {
+		if (!shown('area-switch') && areaFilter.area !== 'all') areaFilter.set('all');
+	});
 	onMount(() => appearance.init());
 	onMount(() => {
 		initPwa();
@@ -265,7 +273,7 @@
 				helpStore.show(e.key === 'u' ? 'updates' : 'settings');
 				return;
 			}
-			if (gAt && Date.now() - gAt < 1200 && jumps[e.key]) {
+			if (gAt && Date.now() - gAt < 1200 && jumps[e.key] && !Object.entries(PAGE_PATHS).some(([f, path]) => path === jumps[e.key] && !shown(f as Feature))) {
 				e.preventDefault();
 				gAt = 0;
 				goto(jumps[e.key]);
@@ -319,7 +327,7 @@
 					title="Menu: places, projects, filters and labels">☰</button
 				>
 				<a href="/" class="btn nav-icon-btn" class:active={isHome} aria-label="Go to home page" title="Home (g h)" aria-current={isHome ? 'page' : undefined}><Icon name="home" /></a>
-				<ViewSwitcher />
+				{#if shown('area-switch')}<ViewSwitcher />{/if}
 				<button
 					class="btn nav-icon-btn hide-narrow"
 					onclick={() => history.back()}

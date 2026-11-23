@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown } from '../lib/stores/features.svelte';
 	// Home page. The view (All / Pro / Perso) is chosen in the top bar (the Inbox is its own page,
 	// /inbox, since 13 Nov 2026). It shows a filter box at the top, then
 	// today's actionable tasks in blocks: Today, This week (the week's list), Red, Available. As soon as something is typed or
@@ -54,7 +55,8 @@
 	const blocks = liveState(
 		() => {
 			const view = areaFilter.area;
-			return getHomeBlocks(view).then((b) => ({ ...b, view: view as string }));
+			// Ongoing tasks get their own block only when it is shown (Settings › Pages and features).
+			return getHomeBlocks(view, shown('ongoing') && shown('home:ongoing')).then((b) => ({ ...b, view: view as string }));
 		},
 		{ ongoing: [], today: [], week: [], red: [], available: [], all: [], pool: [], unsorted: [], view: '' as string }
 	);
@@ -89,31 +91,31 @@
 				<TaskList tasks={filtered} emptyLabel="No task matches" simple completed="hide" />
 			</section>
 		{:else}
-			{#if blocks.value.ongoing.length}
+			{#if blocks.value.ongoing.length && shown('home:ongoing') && shown('ongoing')}
 				<section>
 					<div class="block-head"><h2 class="section-title">Ongoing</h2></div>
 					<TaskList tasks={blocks.value.ongoing} emptyLabel="" simple completed="hide" />
 				</section>
 			{/if}
-			<section class="drop" class:over={dropOn === 'Today'} data-block="today" role="group" aria-label="Today" ondragover={(e) => over(e, 'Today')} ondragleave={(e) => !(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node) && (dropOn = null)} ondrop={(e) => drop(e, 'Today')}>
+			{#if shown('home:today')}<section class="drop" class:over={dropOn === 'Today'} data-block="today" role="group" aria-label="Today" ondragover={(e) => over(e, 'Today')} ondragleave={(e) => !(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node) && (dropOn = null)} ondrop={(e) => drop(e, 'Today')}>
 				<div class="block-head"><h2 class="section-title">Today</h2><button class="plus" onclick={() => (adding = 'Today')} aria-label="New task in Today" title="New task here"><Icon name="plus" size={14} /></button></div>
 				<TaskList tasks={blocks.value.today} emptyLabel="Nothing for today" simple completed="hide" />
-			</section>
+			</section>{/if}
 
-			<section class="drop" class:over={dropOn === 'This week'} data-block="week" role="group" aria-label="This week" ondragover={(e) => over(e, 'This week')} ondragleave={(e) => !(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node) && (dropOn = null)} ondrop={(e) => drop(e, 'This week')}>
+			{#if shown('home:week')}<section class="drop" class:over={dropOn === 'This week'} data-block="week" role="group" aria-label="This week" ondragover={(e) => over(e, 'This week')} ondragleave={(e) => !(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node) && (dropOn = null)} ondrop={(e) => drop(e, 'This week')}>
 				<div class="block-head"><h2 class="section-title">This week</h2><button class="plus" onclick={() => (adding = 'This week')} aria-label="New task in This week" title="New task here"><Icon name="plus" size={14} /></button></div>
 				<TaskList tasks={blocks.value.week} emptyLabel="Nothing planned for the week" simple completed="hide" />
-			</section>
+			</section>{/if}
 
-			<section>
+			{#if shown('home:red')}<section>
 				<div class="block-head"><h2 class="section-title">Red</h2><button class="plus" onclick={() => (adding = 'Red')} aria-label="New task in Red" title="New task here"><Icon name="plus" size={14} /></button></div>
 				<TaskList tasks={blocks.value.red} emptyLabel="Nothing urgent" simple completed="hide" />
-			</section>
+			</section>{/if}
 
-			<section>
+			{#if shown('home:available')}<section>
 				<div class="block-head"><h2 class="section-title">Available</h2><button class="plus" onclick={() => (adding = 'Available')} aria-label="New task in Available" title="New task here"><Icon name="plus" size={14} /></button></div>
 				<TaskList tasks={blocks.value.available} emptyLabel="Nothing available" simple completed="hide" />
-			</section>
+			</section>{/if}
 		{/if}
 </div>
 

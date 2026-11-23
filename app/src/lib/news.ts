@@ -12,6 +12,15 @@ export type NewsEntry = { id: string; date: string; title: string; items: string
 
 export const NEWS: NewsEntry[] = [
 	{
+		id: '2026-11-23',
+		date: '23 Nov 2026',
+		title: 'Choose your pages and features',
+		items: [
+			'Settings › Pages and features: untick what you do not use (pages of the menu, home blocks, All / Pro / Perso, ongoing tasks, reminders). The same on all your devices; everything is on by default.',
+			'Status: a task a problem is about is a link that opens it.'
+		]
+	},
+	{
 		id: '2026-11-20b',
 		date: '20 Nov 2026',
 		title: 'Ongoing tasks, a fuller New task, Today ⇄ This week',

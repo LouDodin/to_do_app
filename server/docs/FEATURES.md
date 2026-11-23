@@ -210,3 +210,5 @@ At the top of the home page, in All, Perso and Pro. Empty, it is just one search
 - **New task window from +**: Inbox by default; optional project, dates, reminder, repeat, labels, notes, cart (shopping).
 - **Home: drag between Today and This week** (computer) changes the label.
 - **Ongoing**: switch on the task page; own block on the home page; first in Tomorrow and the Weekly review.
+- **Settings › Pages and features** (per account): choose the menu pages, home blocks, Pro/Perso switch, ongoing tasks and reminders you see.
+- **Status**: "task #N" in a problem opens the task.

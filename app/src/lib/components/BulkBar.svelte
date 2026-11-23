@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown } from '../stores/features.svelte';
 	// The bar for several selected tasks (5 Nov 2026; redesigned 11 Nov 2026). On the left, how
 	// many are selected, × to clear and "Select all"; then one button per kind of change: Complete,
 	// Move (project, section), Labels, Due, then Pending, Shopping, Inbox directly (11 Nov 2026: no
@@ -196,7 +197,7 @@
 			<button class="act" class:open={menu === 'date'} onclick={() => open('date')} aria-expanded={menu === 'date'}><Icon name="calendar" /><span>Due</span></button>
 			<span class="sep" aria-hidden="true"></span>
 			<button class="act" class:on={allPending} onclick={() => pending(!allPending)} aria-pressed={allPending} title={allPending ? 'Resume them (no longer on hold)' : 'Put them on hold'}><Icon name="pause" /><span>{allPending ? 'Resume' : 'Pending'}</span></button>
-			<button class="act" class:on={allShopping} onclick={() => shopping(!allShopping)} aria-pressed={allShopping} title={allShopping ? 'Take them off the Shopping list' : 'Put them on the Shopping list'}><Icon name="cart" /><span>Shopping</span></button>
+			{#if shown('page:shopping')}<button class="act" class:on={allShopping} onclick={() => shopping(!allShopping)} aria-pressed={allShopping} title={allShopping ? 'Take them off the Shopping list' : 'Put them on the Shopping list'}><Icon name="cart" /><span>Shopping</span></button>{/if}
 			<button class="act" onclick={backToInbox} title="Send them back to the Inbox"><Icon name="inbox" /><span>Inbox</span></button>
 			<span class="sep" aria-hidden="true"></span>
 			<button class="act" onclick={abandonAll} title="Close them without doing them (into the Bin)"><Icon name="abandon" /><span>Abandon</span></button>

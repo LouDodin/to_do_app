@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown as featureShown } from '../../lib/stores/features.svelte';
 	// Tomorrow's priorities: each evening, choose what really needs doing tomorrow. A task chosen
 	// for tomorrow gets the `today` label (it shows in Today on the home page).
 	// Redone 13 Nov 2026 (Lou: as few sections as possible, only what is ahead, no figures), and
@@ -38,7 +39,7 @@
 
 	// On today's list at some point today (utils/dayPlan.ts), still to do.
 	// Ongoing first, and only there (20 Nov 2026, Lou #582).
-	const ongoingAll = $derived(ongoingTasks(tasks.value, projects.value));
+	const ongoingAll = $derived(featureShown('ongoing') ? ongoingTasks(tasks.value, projects.value) : []);
 	const leftover = $derived(plannedNotDone(tasks.value, projects.value, new Set(dayPlans.plans[dayKey(new Date())] ?? [])).filter((t) => !ongoingAll.includes(t)));
 	const leftoverIds = $derived(new Set(leftover.map((t) => t.id)));
 	// 1. Chosen for tomorrow, apart from the tasks planned for today and not done.

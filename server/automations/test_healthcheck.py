@@ -118,6 +118,13 @@ class Structure(unittest.TestCase):
         self.assertEqual(hc.check_relations(snap(ts, relations=[(1, 1, "precedes")])).level, "fail")  # a task before itself is a loop
 
     def test_copy_links_to_deleted_tasks_are_harmless(self):
+        # 23 Nov 2026: a link to a task in Vikunja's trash (deleted from the Bin) is a harmless leftover
+        t = snap([task(1)], relations=[(1, 207, "precedes")]); t["trashed"] = {207}
+        r = hc.check_relations(t)
+        self.assertEqual(r.level, "info")
+        self.assertIn("task #1 precedes a deleted task (#207)", r.items)
+        r = hc.check_relations(snap([task(1)], relations=[(1, 207, "precedes")]))
+        self.assertEqual((r.level, r.items), ("warn", ["task #1 precedes a missing task (#207)"]))
         r = hc.check_relations(snap([task(1)], relations=[(1, 9, "copiedto"), (9, 1, "copiedfrom")]))
         self.assertEqual(r.level, "info")
 

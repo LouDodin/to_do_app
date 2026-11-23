@@ -13,6 +13,7 @@
 	import { validatedMarkInUse } from '../utils/context';
 	import Modal from './Modal.svelte';
 	import { liveState } from '../db/live.svelte';
+	import { FEATURE_GROUPS, shown, setShown } from '../stores/features.svelte';
 	import { db } from '../db/schema';
 	import { findDuplicateLabels, findDuplicateProjects, findDuplicateFilters } from '../utils/dedupe';
 	import { mergeLabelGroup, mergeProjectGroup, removeDuplicateFilters, convertContextFolders, firstSyncDone, NOT_SYNCED_YET } from '../actions/maintenance';
@@ -79,6 +80,21 @@
 	}
 	const acked = $derived(acknowledged());
 	let acking = $state('');
+	// "task #N" in a problem: a link to the task, with its title when it is on this device
+	// (23 Nov 2026, Lou: make it easier to find the tasks a problem is about).
+	const localTitles = liveState(async () => new Map((await db.tasks.toArray()).map((t) => [t.id, t.title])), new Map<number, string>());
+	function detailParts(text: string): (string | { id: number; title?: string })[] {
+		const out: (string | { id: number; title?: string })[] = [];
+		let last = 0;
+		for (const m of text.matchAll(/task #(\d+)/g)) {
+			out.push(text.slice(last, m.index));
+			const id = Number(m[1]);
+			out.push({ id, title: localTitles.value.get(id) });
+			last = (m.index ?? 0) + m[0].length;
+		}
+		out.push(text.slice(last));
+		return out;
+	}
 	const admin = $derived(!!health.report?.viewer?.admin);
 	const me = $derived(health.report?.viewer?.username ?? null);
 	async function onAck(name: string, scope: 'me' | 'everyone' = 'me') {
@@ -322,7 +338,7 @@
 		</dl>
 		{#each issues as c (c.name)}
 			<div class="issue" class:fail={c.status === 'fail'}>
-				<strong>{c.name}</strong>{#if c.detail}: {c.detail}{/if}
+				<strong>{c.name}</strong>{#if c.detail}: {#each detailParts(c.detail) as part, i (i)}{#if typeof part === 'string'}{part}{:else}<a class="tasklink" href="/task/{part.id}" title="Open this task">task #{part.id}{part.title ? ` “${part.title}”` : ''}</a>{/if}{/each}{/if}
 				{#if c.fix}<div class="fix">{c.fix}</div>{/if}
 				{#if admin}
 					<div class="who">
@@ -410,6 +426,22 @@
 			{/each}
 		</div>
 		<label class="mono-row"><input type="checkbox" checked={appearance.mono} onchange={(e) => appearance.set(appearance.theme, (e.target as HTMLInputElement).checked)} /> Labels in shades of grey</label>
+	</section>
+
+	<!-- 23 Nov 2026 (Lou): each account chooses what it sees; everything by default. -->
+	<section class="features">
+		<h2>Pages and features <span class="dim small">(your account, all devices)</span></h2>
+		{#each FEATURE_GROUPS as g (g.title)}
+			<h3>{g.title}</h3>
+			<div class="feat-list">
+				{#each g.items as it (it.key)}
+					<label class="feat" title={it.hint ?? ''}>
+						<input type="checkbox" checked={shown(it.key)} onchange={(e) => setShown(it.key, (e.target as HTMLInputElement).checked)} />
+						{it.label}{#if it.hint}<span class="dim small"> · {it.hint}</span>{/if}
+					</label>
+				{/each}
+			</div>
+		{/each}
 	</section>
 
 	<section>
@@ -597,6 +629,31 @@
 	}
 	.dot.bad {
 		background: var(--danger);
+	}
+	.feat-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 18px;
+		margin-bottom: 8px;
+	}
+	.feat {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: var(--fs-sm);
+		cursor: pointer;
+		min-height: 32px;
+	}
+	.features h3 {
+		font-size: var(--fs-xs);
+		color: var(--text-dim);
+		font-weight: 600;
+		margin: 10px 0 4px;
+	}
+	.tasklink {
+		color: inherit;
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 	.issue {
 		font-size: var(--fs-sm);

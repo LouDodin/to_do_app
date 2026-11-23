@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { shown } from '../../../lib/stores/features.svelte';
 	import Icon from '../../../lib/components/Icon.svelte';
 	import DateField from '../../../lib/components/DateField.svelte';
 	import type { VikunjaTask } from '../../../lib/types';
@@ -275,18 +276,22 @@
 		{/if}
 
 		<div class="switches">
+			{#if shown('page:shopping') || isShopping(task.value)}
 			<label class="switch shop-toggle" title="On the Shopping list (skips the Inbox)">
 				<input type="checkbox" checked={isShopping(task.value)} onchange={(e) => setShopping(taskId, (e.target as HTMLInputElement).checked)} />
 				<Icon name="cart" size={14} /> Shopping
 			</label>
+			{/if}
 			<label class="switch pend-toggle" title="On hold: stays in its project, leaves the home page and Tomorrow until resumed">
 				<input type="checkbox" checked={isTaskPending(task.value)} onchange={(e) => setTaskPending(taskId, (e.target as HTMLInputElement).checked)} />
 				Pending
 			</label>
+			{#if shown('ongoing') || isOngoing(task.value)}
 			<label class="switch ongoing-toggle" title="In progress: at the top of the home page and of the reviews">
 				<input type="checkbox" checked={isOngoing(task.value)} onchange={(e) => setTaskOngoing(taskId, (e.target as HTMLInputElement).checked)} />
 				Ongoing
 			</label>
+			{/if}
 		</div>
 
 		<div class="props">
@@ -353,6 +358,7 @@
 				</div>
 			</div>
 			<!-- 19 Nov 2026: a reminder; the PC notifies your phone at that time (Help > Alerts topic). -->
+			{#if shown('reminders') || reminderOf(task.value)}
 			<div class="field">
 				<span class="label">Remind</span>
 				<div class="value">
@@ -360,6 +366,7 @@
 					{#if reminderOf(task.value)}<button class="link-btn" onclick={() => setReminder(null)} aria-label="Remove the reminder" title="Remove the reminder">×</button>{/if}
 				</div>
 			</div>
+			{/if}
 			<div class="field">
 				<span class="label">Repeat</span>
 				<div class="value repeat-row" title={kind !== 'none' ? 'Completing the task moves its due date to the next time' : undefined}>

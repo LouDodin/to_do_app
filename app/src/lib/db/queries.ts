@@ -214,7 +214,7 @@ function isBinTask(t: VikunjaTask, byId: Map<number, VikunjaProject>): boolean {
 // Since 19 Oct 2026 the home page's last block is "My filter" (built by you, see
 // utils/selfFilter.ts) instead of "All": with no criterion it lists `all` (the tasks of no other
 // block), with criteria it searches the whole `pool`.
-export async function getHomeBlocks(area: 'input' | 'all' | 'Pro' | 'Perso'): Promise<{
+export async function getHomeBlocks(area: 'input' | 'all' | 'Pro' | 'Perso', separateOngoing = true): Promise<{
 	ongoing: VikunjaTask[];
 	today: VikunjaTask[];
 	week: VikunjaTask[];
@@ -238,7 +238,7 @@ export async function getHomeBlocks(area: 'input' | 'all' | 'Pro' | 'Perso'): Pr
 
 	const single = new Set((await db.projects.toArray()).filter((p) => isSingleTasksProject(p)).map((p) => p.id));
 	// Ongoing tasks have their own block, first (20 Nov 2026, Lou #582), and no other.
-	const ongoing = pool.filter((t) => !t.done && isOngoing(t));
+	const ongoing = separateOngoing ? pool.filter((t) => !t.done && isOngoing(t)) : [];
 	const ongoingIds = new Set(ongoing.map((t) => t.id));
 	const { today, week, red, available, all } = partitionHomeBlocks(pool.filter((t) => !ongoingIds.has(t.id)), single);
 
